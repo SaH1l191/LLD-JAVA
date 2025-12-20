@@ -62,7 +62,8 @@ public class Main {
 //Why not instantiate Animal directly?
 // Incomplete Implementation:
 
-
+// can do like 
+// abstract Animal{ Int a = 10 }
 
 
 
