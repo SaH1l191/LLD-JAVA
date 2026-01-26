@@ -1,7 +1,6 @@
 # DRY Principle
 
 **Topic Tags:** Design Patterns, System Design, LLD
-
 🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
 ‍
@@ -325,3 +324,4 @@ In conclusion, the Don't Repeat Yourself (DRY) approach promotes readability, ma
 ‍
 
 The advantages of DRY must be weighed against any potential drawbacks, such as dependency problems, over-abstraction, and premature optimisation. In the end, using DRY in conjunction with other complimentary concepts encourages the development of reliable, scalable, and maintainable software systems. Developers are contributing to a culture of excellence and efficiency in software engineering as they continue to perfect their processes and embrace DRY.
+

@@ -1,0 +1,680 @@
+# State Design Pattern
+
+**Topic Tags:** System Design, LLD
+🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
+‍
+Unlocking the Power of the State Design Pattern in Java 🚦✨
+Introduction to the State Design Pattern 🌟
+Imagine walking into a theater where the lights change seamlessly from red to green to yellow, guiding your actions without you even thinking about it. Each color signals a different behavior, ensuring everything runs smoothly. In the world of software development, this seamless transition and behavior change based on internal states is beautifully handled by the State Design Pattern. It's like giving your objects their own set of "moods" that dictate how they behave in different situations, making your code more organized, flexible, and easier to maintain.
+
+‍
+
+Why Is It Named the State Design Pattern? 🤔
+The State Design Pattern gets its name from its core functionality: managing the state of an object. Just like a traffic light has different states (red, green, yellow) that determine its behavior, the State Pattern allows an object to alter its behavior when its internal state changes. This pattern encapsulates state-specific behaviors into separate classes, promoting cleaner code and better organization.
+
+‍
+
+A Real-World Scenario: Traffic Light System 🚦
+Let's dive into a practical example to see the State Design Pattern in action. Consider a traffic light system. A traffic light can be in one of three states:
+
+‍
+
+• Red: Cars must stop.
+
+• Green: Cars can go.
+
+• Yellow: Cars should slow down and prepare to stop.
+
+‍
+
+Each state dictates different behaviors and transitions. Managing these states efficiently in code ensures that our traffic light system remains scalable and easy to maintain.
+
+‍
+
+Solving the Scenario Traditionally 😬
+Before introducing the State Design Pattern, let's see how we'd handle this using a traditional approach with conditional statements.
+
+‍
+
+Traditional Approach Without State Pattern
+Here's a simple Java implementation of a traffic light system without using the State Design Pattern:
+
+Java
+public class TrafficLight {
+  private String color;
+  public TrafficLight() {
+    this.color = "RED"; // start with red
+  }
+  public void next() {
+    if (color.equals("RED")) {
+      color = "GREEN";
+      System.out.println("Light changed from RED to GREEN. Cars go!");
+    } else if (color.equals("GREEN")) {
+      color = "YELLOW";
+      System.out.println("Light changed from GREEN to YELLOW. Slow down!");
+    } else if (color.equals("YELLOW")) {
+      color = "RED";
+      System.out.println("Light changed from YELLOW to RED. Stop!");
+    }
+  }
+  public String getColor() {
+    return color;
+  }
+}
+
+public class TrafficLightTest {
+  public static void main(String[] args) {
+    TrafficLight trafficLight = new TrafficLight();
+    trafficLight.next(); // from RED to GREEN
+    trafficLight.next(); // from GREEN to YELLOW
+    trafficLight.next(); // from YELLOW to RED
+  }
+}
+‍
+
+Output:
+
+Light changed from RED to GREEN. Cars go!
+Light changed from GREEN to YELLOW. Slow down!
+Light changed from YELLOW to RED. Stop!
+In this setup:
+
+• The TrafficLight class manages its state using a simple color string.
+
+• The next() method uses if-else statements to transition between states.
+
+‍
+
+Interviewer's Follow-Up Questions 🎤
+Imagine you're in a job interview discussing this implementation. The interviewer might ask:
+
+1. "What if we add a new state like BLINKING or MAINTENANCE mode?"
+
+2. "How would you handle more complex transitions or behaviors based on time or external events?"
+
+3. "Can you easily extend this system without modifying the existing TrafficLight class?"
+
+‍
+
+These questions highlight potential issues with the traditional approach, especially as the system grows in complexity.
+
+‍
+
+The Ugly Code When It Grows 😵
+Let's say we decide to add two more states: BLINKING (for night mode) and MAINTENANCE (when the light is under repair). Our TrafficLight class starts to get messy with more if-else conditions.
+
+Java
+public class TrafficLight {
+  private String color;
+  public TrafficLight() {
+    this.color = "RED";
+  }
+  public void next() {
+    if (color.equals("RED")) {
+      color = "GREEN";
+      System.out.println("Change to GREEN. Cars go!");
+    } else if (color.equals("GREEN")) {
+      color = "YELLOW";
+      System.out.println("Change to YELLOW. Slow down!");
+    } else if (color.equals("YELLOW")) {
+      color = "RED";
+      System.out.println("Change to RED. Stop!");
+    } else if (color.equals("BLINKING")) {
+      color = "MAINTENANCE";
+      System.out.println("Switching to MAINTENANCE mode...");
+    } else if (color.equals("MAINTENANCE")) {
+      color = "RED";
+      System.out.println("Maintenance done, back to RED!");
+    }
+    // Potentially more states and conditions...
+  }
+  public String getColor() {
+    return color;
+  }
+}
+‍
+
+Issues with the Traditional Approach:
+• Tight Coupling:
+
+The TrafficLight class is tightly coupled with all possible states.
+
+‍
+
+• Scalability Problems:
+
+Adding new states requires modifying the next() method, leading to a bloated method.
+
+‍
+
+• Maintenance Nightmare:
+
+Each new state adds more complexity, making the code hard to read and maintain.
+
+‍
+
+• Violation of Open/Closed Principle:
+
+The class isn't closed for modification; every change requires altering existing code.
+
+‍
+
+Introducing Our Savior: The State Design Pattern 🦸‍♂️
+To combat the chaos of the traditional approach, we introduce the State Design Pattern. This pattern allows an object to alter its behavior when its internal state changes by delegating state-specific behaviors to separate classes. It promotes cleaner code, easier maintenance, and better scalability.
+
+‍
+
+Solving the Problem Using the State Design Pattern 🛠️
+Let's refactor our traffic light system using the State Design Pattern. We'll create separate state classes for each color, each handling its own transition logic.
+
+‍
+
+Step-by-Step Code Implementation:
+
+1. State Interface 📝
+First, define a State interface that outlines the behavior for each state.
+
+Java
+// State Interface
+interface TrafficLightState {
+    void next(TrafficLightContext context);
+    String getColor();
+}
+‍
+
+2. Concrete States 🌈
+Next, implement concrete state classes for each traffic light color: RedState, GreenState, and YellowState.
+
+Java
+// Concrete State: Red
+class RedState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    System.out.println("Switching from RED to GREEN. Cars go!");
+    context.setState(new GreenState());
+  }
+  @Override
+  public String getColor() {
+    return "RED";
+  }
+}
+
+// Concrete State: Green
+class GreenState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    System.out.println("Switching from GREEN to YELLOW. Slow down!");
+    context.setState(new YellowState());
+  }
+  @Override
+  public String getColor() {
+    return "GREEN";
+  }
+}
+
+// Concrete State: Yellow
+class YellowState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    System.out.println("Switching from YELLOW to RED. Stop!");
+    context.setState(new RedState());
+  }
+  @Override
+  public String getColor() {
+    return "YELLOW";
+  }
+}
+‍
+
+3. Context Class 🎭
+Create a Context class that maintains a reference to the current state and delegates state-specific behavior to the current state.
+
+Java
+// Context Class
+class TrafficLightContext {
+  private TrafficLightState currentState;
+  public TrafficLightContext() {
+    currentState = new RedState(); // Start with RED
+  }
+  public void setState(TrafficLightState state) {
+    this.currentState = state;
+  }
+  public void next() {
+    currentState.next(this);
+  }
+  public String getColor() {
+    return currentState.getColor();
+  }
+}
+‍
+
+4. Driver Code 🏁
+Finally, set up the traffic light system and simulate state transitions.
+
+Java
+// Driver Class
+public class TrafficLightTest {
+  public static void main(String[] args) {
+    TrafficLightContext trafficLight = new TrafficLightContext();
+    trafficLight.next(); // RED -> GREEN
+    trafficLight.next(); // GREEN -> YELLOW
+    trafficLight.next(); // YELLOW -> RED
+    trafficLight.next(); // RED -> GREEN
+    // Adding new states like BLINKING or MAINTENANCE is easy now
+  }
+}
+‍
+
+Output:
+
+Switching from RED to GREEN. Cars go!
+Switching from GREEN to YELLOW. Slow down!
+Switching from YELLOW to RED. Stop!
+Switching from RED to GREEN. Cars go!
+‍
+
+Article image
+
+‍
+
+Breaking Down the State Pattern Implementation 🔍
+• State Interface (TrafficLightState):
+
+○ Defines the next() method to transition to the next state.
+
+○ getColor() returns the current state's color.
+
+‍
+
+• Concrete States (RedState, GreenState, YellowState):
+
+○ Each state implements the TrafficLightState interface.
+
+○ Each state's next() method defines the transition to the next state.
+
+○ Encapsulates state-specific behavior and transitions.
+
+‍
+
+• Context Class (TrafficLightContext):
+
+○ Holds a reference to the current state.
+
+○ Delegates the next() call to the current state.
+
+○ Provides a method to change the current state (setState).
+
+‍
+
+• Driver Class (TrafficLightTest):
+
+○ Initializes the traffic light context.
+
+○ Simulates state transitions by calling next().
+
+‍
+
+• Relationships Illustrated 🤝
+
+○ Inheritance: RedState, GreenState, and YellowState implement the TrafficLightState interface, indicated by the hollow arrows (<|..).
+
+○ Association: TrafficLightContext has a TrafficLightState, shown by the solid arrow (->).
+
+‍
+
+Handling Interview Follow-Up Questions with the State Pattern 🗣️
+Revisiting those interviewer's questions, let's see how the State Design Pattern addresses them:
+
+‍
+
+1. What if we add a new state like BLINKING or MAINTENANCE?
+
+State Pattern Solution: Simply create a new class (e.g., BlinkingState) that implements the TrafficLightState interface and define its transition logic. No changes needed in existing classes.
+
+‍
+
+Java
+// Concrete State: Blinking
+class BlinkingState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    System.out.println("Switching from BLINKING to MAINTENANCE mode...");
+    context.setState(new MaintenanceState());
+  }
+  @Override
+  public String getColor() {
+    return "BLINKING";
+  }
+}
+
+// Concrete State: Maintenance
+class MaintenanceState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    System.out.println("Maintenance done, back to RED!");
+    context.setState(new RedState());
+  }
+  @Override
+  public String getColor() {
+    return "MAINTENANCE";
+  }
+}
+‍
+
+2. "How would you handle more complex transitions or behaviors based on time or external events?"
+
+State Pattern Solution: Each state class can incorporate its own logic to handle time-based transitions or respond to external events. This keeps the transition logic localized within each state.
+
+‍
+
+Java
+// Example: Adding time-based behavior in GreenState
+class GreenState implements TrafficLightState {
+  @Override
+  public void next(TrafficLightContext context) {
+    // Imagine some timer logic here
+    System.out.println("Switching from GREEN to YELLOW after timer.");
+    context.setState(new YellowState());
+  }
+  @Override
+  public String getColor() {
+    return "GREEN";
+  }
+}
+‍
+
+3. "Can you easily extend this system without modifying the existing TrafficLight class?"
+
+State Pattern Solution: Yes! The TrafficLight class (context) remains unchanged. Adding new states involves creating new state classes without touching the existing ones, adhering to the Open/Closed Principle.
+
+‍
+
+Day-to-Day Use Cases and Examples 🌍
+The State Design Pattern is versatile and widely applicable. Here are some everyday examples:
+
+Media Players 🎬:
+
+Handling different states like Playing, Paused, Stopped, and Fast Forwarding. Each state dictates how the player responds to user inputs.
+
+‍
+
+Vending Machines 🥤:
+
+Managing states like NoCoin, HasCoin, Dispensing, and SoldOut. Each state determines the machine's response to user actions.
+
+‍
+
+Document Workflows 📄:
+
+Handling states like Draft, Review, Published, and Archived. Each state controls what actions can be performed on the document.
+
+‍
+
+Game Characters 🎮:
+
+Managing states like Idle, Running, Jumping, and Attacking. Each state defines the character's behavior and possible transitions.
+
+‍
+
+Advantages of Using the State Design Pattern 🌈
+Cleaner Code:
+Eliminates complex if-else or switch statements by encapsulating state-specific behaviors.
+
+‍
+
+2. Enhanced Maintainability:
+
+Adding new states or modifying existing ones is straightforward without altering the core logic.
+
+‍
+
+3. Promotes Single Responsibility Principle:
+
+Each state class handles its own behavior, making classes easier to understand and manage.
+
+‍
+
+4. Improved Scalability:
+
+Easily extend the system with new states without increasing the complexity of existing classes.
+
+‍
+
+5. Encapsulation of State-Specific Logic:
+
+Each state class contains only the logic relevant to that state, promoting better organization.
+
+‍
+
+Wrapping Up with a Smile 😄
+The State Design Pattern is a powerful tool in your software design arsenal, enabling you to manage an object's behavior based on its internal state seamlessly. By encapsulating state-specific behaviors into separate classes, you not only keep your code clean and organized but also make it highly adaptable to change. Whether you're building traffic systems, media players, or complex workflows, the State Pattern ensures your code remains maintainable and scalable.
+
+‍
+
+Next time you find yourself tangled in a web of conditional statements, remember the State Design Pattern—your friendly neighborhood hero ready to bring order and clarity to your code! 🚀✨ Happy coding!
+
+
+
+
+Drawbacks of Naive Code (with Real Examples)
+1️⃣ Too Many if-else → Code Explosion
+Problem
+
+Every new state adds:
+
+a new else if
+
+more conditions
+
+more chances to break existing logic
+
+Example
+
+Add:
+
+BLINKING (night mode)
+
+MAINTENANCE
+
+if (color.equals("RED")) {
+  ...
+} else if (color.equals("GREEN")) {
+  ...
+} else if (color.equals("YELLOW")) {
+  ...
+} else if (color.equals("BLINKING")) {
+  ...
+} else if (color.equals("MAINTENANCE")) {
+  ...
+}
+
+Why this is bad
+
+One method becomes 100+ lines
+
+Hard to read
+
+Hard to debug
+
+Easy to forget edge cases
+
+👉 Interview keyword: Cyclomatic Complexity increases
+
+2️⃣ Violates Open / Closed Principle (OCP)
+
+Class should be open for extension but closed for modification
+
+Problem
+
+Every time you add a new state, you modify existing code
+
+Example
+
+Adding EMERGENCY state:
+
+else if (color.equals("EMERGENCY")) {
+  color = "RED";
+}
+
+Why this is bad
+
+You are touching tested production code
+
+High risk of bugs
+
+Regression issues
+
+👉 Interview line:
+
+“Naive approach forces us to modify the core class for every new state.”
+
+3️⃣ Tight Coupling Between State & Logic
+Problem
+
+TrafficLight knows everything about:
+
+all states
+
+all transitions
+
+all behaviors
+
+class TrafficLight {
+  String color;  // knows state
+  // knows what each state does
+}
+
+Example
+
+If tomorrow:
+
+GREEN duration depends on traffic density
+
+RED depends on pedestrian input
+
+All logic goes inside the same class
+
+Result
+
+God Class
+
+Low cohesion
+
+High coupling
+
+👉 Interview phrase:
+
+“State-specific logic is tightly coupled to the context.”
+
+4️⃣ Hard to Handle Complex Transitions
+Problem
+
+Naive code handles linear transitions only
+
+But real systems have:
+
+time-based transitions
+
+event-based transitions
+
+conditional transitions
+
+Example
+
+Green → Yellow only after 60 seconds OR if ambulance detected
+
+else if (color.equals("GREEN")) {
+  if (timerExpired || ambulanceDetected) {
+    color = "YELLOW";
+  }
+}
+
+
+Now imagine this for every state 😵
+
+Why it fails
+
+Nested ifs
+
+Spaghetti logic
+
+Impossible to reason about
+
+5️⃣ Poor Testability
+Problem
+
+You cannot test states independently
+
+Example
+
+You want to test only Green behavior:
+
+You must create full TrafficLight
+
+Set color = "GREEN"
+
+Call next()
+
+Hope nothing else breaks
+
+Result
+
+Large integration tests
+
+No unit tests per state
+
+👉 Interview point:
+
+“State behavior cannot be tested in isolation.”
+
+6️⃣ Adding Behavior = Editing Old Code
+Example
+
+Requirement:
+
+“When light turns RED, notify police system”
+
+Naive approach:
+
+if (color.equals("YELLOW")) {
+  color = "RED";
+  notifyPolice();
+}
+
+
+Now RED behavior is scattered:
+
+Some in RED block
+
+Some in YELLOW block
+
+This causes
+
+Duplicate logic
+
+Hidden bugs
+
+Unclear ownership of behavior
+
+7️⃣ Hard to Understand for New Developers
+Reality check:
+
+A new dev opens the file and sees:
+
+if (...)
+else if (...)
+else if (...)
+else if (...)
+else if (...)
+
+
+They must:
+
+mentally track states
+
+understand transitions
+
+understand side effects
+
+❌ Not beginner-friendly
+❌ Not maintainable in teams
