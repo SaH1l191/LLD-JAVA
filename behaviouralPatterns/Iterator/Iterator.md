@@ -1,58 +1,53 @@
 # Iterator Design Pattern
 
 **Topic Tags:** System Design, LLD
+
 🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-‍
+## Introduction to the Iterator Design Pattern 🧩
 
-Introduction to the Iterator Design Pattern 🧩
 The Iterator Design Pattern is a behavioral design pattern that allows us to traverse a collection of objects (like arrays or lists) without exposing the underlying implementation details. Think of it as a tour guide showing you around a museum: instead of telling you how the exhibits are arranged, the guide simply takes you through the rooms one by one, in an easy-to-follow order.
 
-‍
+In software development, this pattern is extremely useful when we want to access elements in a collection (like a list or a set) sequentially without exposing the complexity of the collection itself. It decouples the way we access elements from the collection's underlying data structure, allowing us to write cleaner, more maintainable code.
 
-In software development, this pattern is extremely useful when we want to access elements in a collection (like a list or a set) sequentially without exposing the complexity of the collection itself. It decouples the way we access elements from the collection’s underlying data structure, allowing us to write cleaner, more maintainable code.
+## Real-Life Scenario: Playlist Iterator 🎶
 
-Real-Life Scenario: Playlist Iterator 🎶
-Let’s imagine you are building a music streaming app, and one of the features is a playlist. Users can add songs to their playlists, and they should be able to iterate through their playlist to listen to each song one by one.
+Let's imagine you are building a music streaming app, and one of the features is a playlist. Users can add songs to their playlists, and they should be able to iterate through their playlist to listen to each song one by one.
 
-‍
+Now, let's say we have different types of playlists, such as:
 
-Now, let’s say we have different types of playlists, such as:
-
-• A simple playlist where songs are added in a particular order.
-
-• A random playlist where songs are shuffled.
-
-‍
+* A simple playlist where songs are added in a particular order.
+* A random playlist where songs are shuffled.
 
 Instead of writing custom code for iterating over each type of playlist, the Iterator Design Pattern will allow us to abstract the iteration logic and provide a unified way to access elements.
 
-‍
-Why is it Named the Iterator Design Pattern? 🤔
+## Why is it Named the Iterator Design Pattern? 🤔
+
 The name Iterator comes from the fact that this pattern allows us to iterate over elements of a collection. The main purpose of the pattern is to provide a way to sequentially access each element in the collection, without exposing its underlying structure or implementation.
 
-‍
+## Solving the Problem Using the Traditional Method 🛠️
 
-Solving the Problem Using the Traditional Method 🛠️
-Let’s say you have a simple playlist class, and you want to iterate over the songs using the traditional approach. Here’s how you might do it:
+Let's say you have a simple playlist class, and you want to iterate over the songs using the traditional approach. Here's how you might do it:
 
-‍
-
-Java
+```java
 import java.util.ArrayList;
+
 public class Playlist {
-  private ArrayList<String> songs;
-  public Playlist() {
-    songs = new ArrayList<>();
-  }
-  public void addSong(String song) {
-    songs.add(song);
-  }
-  public void playPlaylist() {
-    for (int i = 0; i < songs.size(); i++) {
-      System.out.println("Playing song: " + songs.get(i));
+    private ArrayList<String> songs;
+    
+    public Playlist() {
+        songs = new ArrayList<>();
     }
-  }
+    
+    public void addSong(String song) {
+        songs.add(song);
+    }
+    
+    public void playPlaylist() {
+        for (int i = 0; i < songs.size(); i++) {
+            System.out.println("Playing song: " + songs.get(i));
+        }
+    }
 }
 ‍
 

@@ -2,37 +2,34 @@
 
 **Topic Tags:** OOPS, System Design
 
-Simplicity is a key tenet of effective software development. Among the many principles developers follow to ensure clarity and efficiency, the KISS Principle stands out. KISS, an acronym for Keep It Simple, Stupid, emphasizes the importance of simplicity in design and implementation. Though the phrasing may sound harsh, the intent is constructive: avoid unnecessary complexity to create solutions that are both efficient and maintainable.
+Simplicity is a key tenet of effective software development. Among the many principles developers follow to ensure clarity and efficiency, the KISS Principle stands out. KISS, an acronym for **Keep It Simple, Stupid**, emphasizes the importance of simplicity in design and implementation. Though the phrasing may sound harsh, the intent is constructive: avoid unnecessary complexity to create solutions that are both efficient and maintainable.
 
-‍
+## What is the KISS Principle?
 
 The KISS Principle asserts that systems and solutions should be as simple as possible without compromising functionality. This principle originates from the field of engineering but has found widespread application in software development.
 
-‍‍
-
 The idea is straightforward: overcomplicated code is harder to understand, debug, and maintain. By keeping solutions simple, developers can improve their own productivity while ensuring that their code remains accessible to others.
 
-‍
+## Example of Bad Code vs. KISS-Compliant Code
 
-Example of Bad Code vs. KISS-Compliant Code : 
-🚨 Bad Code:
+### Bad Code:
 The following code is a poorly written example of calculating the factorial of a number. It overcomplicates the logic and lacks readability.
 
-‍
-
-Java
+```java
 // Bad Code: Overcomplicated, lacks clarity, and violates KISS
 public class FactorialCalculator {
-  public static int factorial(int n) {
-    if (n == 0)
-      return 1; // Base case
-    int fact = 1;
-    for (int i = 1; i <= n; i++) {
-      int temp = 1; // Temporary variable to store intermediate results
-      for (int j = 1; j <= i; j++) {
-        temp *= j; // Multiplying repeatedly in nested loops
-      }
-      fact = temp; // Reassigning fact unnecessarily
+    public static int factorial(int n) {
+        if (n == 0)
+            return 1; // Base case
+        int fact = 1;
+        for (int i = 1; i <= n; i++) {
+            int temp = 1; // Temporary variable to store intermediate results
+            for (int j = 1; j <= i; j++) {
+                temp *= j; // Multiplying repeatedly in nested loops
+            }
+            fact = temp; // Reassigning fact unnecessarily
+        }
+        return fact;
     }
     return fact;
   }

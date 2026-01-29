@@ -4,293 +4,241 @@
 
 🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-‍
-
 Software development is a complex field that requires careful planning and design to ensure that applications are maintainable, scalable, and easy to understand. One of the foundational guidelines for achieving these goals is the set of SOLID principles. 🛠️📊
-
-‍
 
 SOLID principles are five essential guidelines that enhance software design, making code more maintainable and scalable. They include:
 
-1. Single Responsibility Principle 🔑
+1. **Single Responsibility Principle** 🔑
+2. **Open/Closed Principle** 🔓
+3. **Liskov Substitution Principle** 🔄
+4. **Interface Segregation Principle** 📏
+5. **Dependency Inversion Principle** 🔗
 
-2. Open/Closed Principle 🔓
+## Need for SOLID Principles in Object-Oriented Design
 
-3. Liskov Substitution Principle 🔄
-
-4. Interface Segregation Principle 📏
-
-5. Dependency Inversion Principle 🔗
-
-‍
-
-Need for SOLID Principles in Object-Oriented Design:
 Below are some of the main reasons why SOLID principles are important in object-oriented design:
 
-• Scalability: Adding new features becomes straightforward. 📈
-
-• Maintainability: Changes in one part of the system have minimal impact on others. 🔄
-
-• Testability: Decoupled designs make unit testing easier. 🧪
-
-• Readability: Clear separation of concerns improves code comprehension. 📚
-
-‍
+- **Scalability**: Adding new features becomes straightforward. 📈
+- **Maintainability**: Changes in one part of the system have minimal impact on others. 🔄
+- **Testability**: Decoupled designs make unit testing easier. 🧪
+- **Readability**: Clear separation of concerns improves code comprehension. 📚
 
 Adopting SOLID principles is a key step toward mastering clean code and professional software development. 💡 While it takes practice to apply these principles effectively, the long-term benefits for both developers and businesses are undeniable. 🚀
 
-📦Single Responsibility Principle‍
-This principle states that A class should have only one reason to change which means every class should have a single responsibility or single job or single purpose. In other words, a class should have only one job or purpose within the software system.
+## 📦 Single Responsibility Principle
 
-‍
+This principle states that **A class should have only one reason to change** which means every class should have a single responsibility or single job or single purpose. In other words, a class should have only one job or purpose within the software system.
 
-🌟Why it matters:
-• Improves maintainability: Changes in one class do not affect unrelated parts.
+### 🌟 Why it matters:
+- Improves maintainability: Changes in one class do not affect unrelated parts.
+- Enhances readability and reduces complexity.
 
-• Enhances readability and reduces complexity.
+### 💭 Example:
+Imagine a baker who is responsible for baking bread. The baker's role is to focus on the task of baking bread, ensuring that the bread is of high quality, properly baked, and meets the bakery's standards.
 
-‍
+However, if the baker is also responsible for managing the inventory, ordering supplies, serving customers, and cleaning the bakery, this would violate the SRP. Each of these tasks represents a separate responsibility, and by combining them, the baker's focus and effectiveness in baking bread could be compromised.
 
-💭Example:
-Imagine a baker who is responsible for baking bread. The baker’s role is to focus on the task of baking bread, ensuring that the bread is of high quality, properly baked, and meets the bakery’s standards.
+#### Violation of SRP
 
-However, if the baker is also responsible for managing the inventory, ordering supplies, serving customers, and cleaning the bakery, this would violate the SRP. Each of these tasks represents a separate responsibility, and by combining them, the baker’s focus and effectiveness in baking bread could be compromised.
-
-‍
-
-Java
+```java
 // Class with multiple responsibilities
 class BreadBaker {
- public
-  void bakeBread() { System.out.println("Baking high-quality bread..."); }
+    public void bakeBread() { 
+        System.out.println("Baking high-quality bread..."); 
+    }
 
- public
-  void manageInventory() { System.out.println("Managing inventory..."); }
+    public void manageInventory() { 
+        System.out.println("Managing inventory..."); 
+    }
 
- public
-  void orderSupplies() { System.out.println("Ordering supplies..."); }
+    public void orderSupplies() { 
+        System.out.println("Ordering supplies..."); 
+    }
 
- public
-  void serveCustomer() { System.out.println("Serving customers..."); }
+    public void serveCustomer() { 
+        System.out.println("Serving customers..."); 
+    }
 
- public
-  void cleanBakery() { System.out.println("Cleaning the bakery..."); }
+    public void cleanBakery() { 
+        System.out.println("Cleaning the bakery..."); 
+    }
 
- public
-  static void main(String[] args) {
-    BreadBaker baker = new BreadBaker();
-    baker.bakeBread();
-    baker.manageInventory();
-    baker.orderSupplies();
-    baker.serveCustomer();
-    baker.cleanBakery();
-  }
+    public static void main(String[] args) {
+        BreadBaker baker = new BreadBaker();
+        baker.bakeBread();
+        baker.manageInventory();
+        baker.orderSupplies();
+        baker.serveCustomer();
+        baker.cleanBakery();
+    }
 }
-‍
+```
 
 In the above code example, the BreadBaker class has multiple responsibilities: baking bread, managing inventory, ordering supplies, serving customers, and cleaning the bakery. This violates the Single Responsibility Principle (SRP) because the class has more than one reason to change. If any of these responsibilities need to be modified, the BreadBaker class would need to be changed, making the code harder to maintain and understand. For instance, if there is a change in the way inventory is managed, the BreadBaker class would need to be updated, even though the change is unrelated to baking bread. This coupling of unrelated responsibilities increases the risk of introducing bugs and makes the codebase more difficult to maintain.
 
-‍
-
 Moreover, having multiple responsibilities in a single class reduces readability and increases complexity. It becomes challenging for developers to understand the purpose of the class and to locate specific functionality within the code. By combining different responsibilities, the class becomes a monolithic block of code that is harder to test and debug. This complexity can lead to longer development times and increased chances of errors. Adhering to the SRP by separating these responsibilities into distinct classes improves code maintainability, readability, and reduces the likelihood of unintended side effects when making changes.
-
-‍
 
 To adhere to the SRP, the bakery could assign different roles to different individuals or teams. For example, there could be a separate person or team responsible for managing the inventory, another for ordering supplies, another for serving customers, and another for cleaning the bakery.
 
-‍
+#### Correct Implementation of SRP
 
-Java
+```java
 // Class for baking bread
 class BreadBaker {
- public
-  void bakeBread() { System.out.println("Baking high-quality bread..."); }
+    public void bakeBread() { 
+        System.out.println("Baking high-quality bread..."); 
+    }
 }
 
 // Class for managing inventory
 class InventoryManager {
- public
-  void manageInventory() { System.out.println("Managing inventory..."); }
+    public void manageInventory() { 
+        System.out.println("Managing inventory..."); 
+    }
 }
 
 // Class for ordering supplies
 class SupplyOrder {
- public
-  void orderSupplies() { System.out.println("Ordering supplies..."); }
+    public void orderSupplies() { 
+        System.out.println("Ordering supplies..."); 
+    }
 }
 
 // Class for serving customers
 class CustomerService {
- public
-  void serveCustomer() { System.out.println("Serving customers..."); }
+    public void serveCustomer() { 
+        System.out.println("Serving customers..."); 
+    }
 }
 
 // Class for cleaning the bakery
 class BakeryCleaner {
- public
-  void cleanBakery() { System.out.println("Cleaning the bakery..."); }
+    public void cleanBakery() { 
+        System.out.println("Cleaning the bakery..."); 
+    }
 }
 
 public class Bakery {
- public
-  static void main(String[] args) {
-    BreadBaker baker = new BreadBaker();
-    InventoryManager inventoryManager = new InventoryManager();
-    SupplyOrder supplyOrder = new SupplyOrder();
-    CustomerService customerService = new CustomerService();
-    BakeryCleaner cleaner = new BakeryCleaner();
-    // Each class focuses on its specific responsibility
-    baker.bakeBread();
-    inventoryManager.manageInventory();
-    supplyOrder.orderSupplies();
-    customerService.serveCustomer();
-    cleaner.cleanBakery();
-  }
+    public static void main(String[] args) {
+        BreadBaker baker = new BreadBaker();
+        InventoryManager inventoryManager = new InventoryManager();
+        SupplyOrder supplyOrder = new SupplyOrder();
+        CustomerService customerService = new CustomerService();
+        BakeryCleaner cleaner = new BakeryCleaner();
+        
+        // Each class focuses on its specific responsibility
+        baker.bakeBread();
+        inventoryManager.manageInventory();
+        supplyOrder.orderSupplies();
+        customerService.serveCustomer();
+        cleaner.cleanBakery();
+    }
 }
-‍
+```
 
 In the above example:
 
-• Bread Baker Class:
-
-Responsible solely for baking bread. This class focuses on ensuring the quality and standards of the bread without being burdened by other tasks.
-
-‍
-
-• Inventory Manager Class:
-
-Handles inventory management, ensuring that the bakery has the right ingredients and supplies available.
-
-‍
-
-• Supply Order Class:
-
-Manages ordering supplies, ensuring that the bakery is stocked with necessary items.
-
-‍
-
-• Customer Service Class:
-
-Takes care of serving customers, providing a focused approach to customer interactions.
-
-‍
-
-• Bakery Cleaner Class:
-
-Responsible for cleaning the bakery, ensuring a hygienic environment.
-
-‍
+- **Bread Baker Class**: Responsible solely for baking bread. This class focuses on ensuring the quality and standards of the bread without being burdened by other tasks.
+- **Inventory Manager Class**: Handles inventory management, ensuring that the bakery has the right ingredients and supplies available.
+- **Supply Order Class**: Manages ordering supplies, ensuring that the bakery is stocked with necessary items.
+- **Customer Service Class**: Takes care of serving customers, providing a focused approach to customer interactions.
+- **Bakery Cleaner Class**: Responsible for cleaning the bakery, ensuring a hygienic environment.
 
 By adhering to the SRP, the code becomes more maintainable and easier to understand. Changes in one class do not affect unrelated parts, enhancing readability and reducing complexity. Each class has a clear and focused responsibility, making the system more modular and easier to manage.
 
-🚪Open/Closed Principle
-This principle states that Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification which means you should be able to extend a class behavior, without modifying it.
+## Open/Closed Principle
 
-‍
+This principle states that **Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification** which means you should be able to extend a class behavior, without modifying it.
 
-🌟Why it matters:
-• Prevents breaking existing code.
+### Why it matters:
+- Prevents breaking existing code.
+- Encourages reusable components.
 
-• Encourages reusable components.
-
-‍
-
-💭Example:
+### Example:
 Suppose we have a Shape class that calculates the area of different shapes. Initially, it supports only circles and rectangles. Adding a new shape, like a triangle, would require modifying the existing code.
 
 The Open/Closed Principle states that software entities should be open for extension but closed for modification. Here since we are modifying the existing code and not extending it, that is why the current approach is problematic:
 
-‍
+#### Violation of Open/Closed Principle
 
-Java
+```java
 // Incorrect approach
 class Shape {
- private
-  String type;
- public
-  double calculateArea() {
-    if (type.equals("circle")) {
-      // Circle area calculation
-    } else if (type.equals("rectangle")) {
-      // Rectangle area calculation
+    private String type;
+    
+    public double calculateArea() {
+        if (type.equals("circle")) {
+            // Circle area calculation
+        } else if (type.equals("rectangle")) {
+            // Rectangle area calculation
+        }
+        // Adding a triangle requires modifying this method
     }
-    // Adding a triangle requires modifying this method
-  }
 }
-‍
+```
 
 In the above code example, the Shape class has multiple responsibilities: calculating the area for different shapes. This violates the Open/Closed Principle because adding a new shape, like a triangle, requires modifying the existing code. This can lead to potential bugs and makes the code harder to maintain. When a new shape is introduced, the calculateArea method must be updated to handle the new shape, which increases the risk of errors and makes the code less flexible. This approach tightly couples the Shape class to the specific shapes it supports, reducing its extensibility.
 
-‍
-
 Moreover, this design makes it difficult to add new shapes without altering the existing codebase. Each time a new shape is added, the Shape class must be modified, which can introduce unintended side effects and disrupt the functionality of the existing shapes. This lack of modularity and extensibility makes the system harder to maintain and evolve over time. By adhering to the Open/Closed Principle, we can create a more robust and maintainable system where new shapes can be added without modifying the existing code, thus reducing the risk of bugs and improving the overall design.
 
-‍
+Instead, we can implement the Open/Closed principle correctly by creating an abstract class/Interface of Shape and all the other classes will extend/inherit the methods of the Shape class efficiently following the Open/Closed Principle.
 
-Instead, we can implement the Open/Closed principle correctly by creating and abstract class / Interface of Shape and all the other classes will extend/inherit the methods of the Shape class efficiently following the Open/Closed Principle.
+#### Correct Implementation of Open/Closed Principle
 
-‍
-
-Java
+```java
 // Better approach following Open/Closed Principle
 abstract class Shape {
-  abstract double calculateArea();
-  // We can also use an interface instead of an abstract class
+    abstract double calculateArea();
+    // We can also use an interface instead of an abstract class
 }
 
 class Circle extends Shape {
- private
-  double radius;
-  @Override 
-public double calculateArea() {
-    return Math.PI * radius * radius;
-  }
+    private double radius;
+    
+    @Override 
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
 }
 
 class Rectangle extends Shape {
- private
-  double width;
- private
-  double height;
-  @Override 
-public double calculateArea() {
-    return width * height;
-  }
+    private double width;
+    private double height;
+    
+    @Override 
+    public double calculateArea() {
+        return width * height;
+    }
 }
 
 // Adding a new shape without modifying existing code
 class Triangle extends Shape {
- private
-  double base;
- private
-  double height;
-  @Override 
-public double calculateArea() {
-    return 0.5 * base * height;
-  }
+    private double base;
+    private double height;
+    
+    @Override 
+    public double calculateArea() {
+        return 0.5 * base * height;
+    }
 }
-‍
+```
 
-📖 Explanation:
- In the corrected code example, each shape class has a single responsibility:
+### Explanation:
+In the corrected code example, each shape class has a single responsibility:
 
-• Base Class (Shape): This is an abstract base class with an abstract function calculateArea(). It defines a common interface for all shapes.
-
-• Circle Class: This class implements the calculateArea() logic for circles.
-
-• Rectangle Class: This class implements the calculateArea() logic for rectangles.
-
-• Triangle Class: This class implements the calculateArea() logic for triangles.
-
-‍
+- **Base Class (Shape)**: This is an abstract base class with an abstract function calculateArea(). It defines a common interface for all shapes.
+- **Circle Class**: This class implements the calculateArea() logic for circles.
+- **Rectangle Class**: This class implements the calculateArea() logic for rectangles.
+- **Triangle Class**: This class implements the calculateArea() logic for triangles.
 
 By adhering to the Open/Closed Principle, the code becomes more maintainable and easier to understand. Adding a new shape, like a triangle, does not require modifying the existing code. Instead, we extend the Shape class by creating a new class for the triangle. This approach prevents breaking existing code and encourages the creation of reusable components.
 
-‍
-
-🔄 Liskov Substitution Principle
+ Liskov Substitution Principle
 The principle was introduced by Barbara Liskov in 1987 and according to this principle Derived or child classes must be substitutable for their base or parent classes. This principle ensures that any class that is the child of a parent class should be usable in place of its parent without any unexpected behavior.
 
+ Why it matters:
+ Ensures reliability when using polymorphism.
+ Avoids unexpected behaviors in subclass implementations.
 ‍
 
 🌟 Why it matters:

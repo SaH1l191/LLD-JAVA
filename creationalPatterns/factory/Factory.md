@@ -1,38 +1,46 @@
 # Factory Design Pattern
 
-**Topic Tags:** System Design, LLD
+**Topic Tags:**
+- System Design
+- LLD
 
-🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
+
+## Problem Statement: Creating Objects Dynamically 🚗🏍️🚚
+
+Imagine you're building a software system to manage vehicles for a transportation company. The system needs to create different types of vehicles such as Car, Truck, and Bike. These vehicles have different characteristics, but they all share a few common behaviors like start() and stop().
+
+Now, each time you need to create a vehicle, you have to decide which class to instantiate: Car, Truck, or Bike. If your application has many places where vehicles are created, maintaining all these object creation codes in different classes becomes messy.
+
+### The Problem
+
+Each time you need to create a vehicle, you have to decide manually which class to instantiate:
+
+- **Car** 🚗
+- **Truck** 🚛
+- **Bike** 🏍️
+
+If your application has many places where vehicles are created, maintaining all these object creation codes in different classes becomes messy!
+
+**Hard-coding class names everywhere = bad maintainability!**
+
+### The Challenge
+
+How can we create vehicles easily and cleanly without hard-coding the class names everywhere in the code?
 
 ‍
-Problem Statement: Creating Objects Dynamically 🚗🏍️🚚
-Imagine you’re building a software system to manage vehicles for a transportation company. The system needs to create different types of vehicles such as Car, Truck, and Bike. These vehicles have different characteristics, but they all share a few common behaviors like start() and stop().
 
-Now, each time you need to create a vehicle, you have to decide which class to instantiate: Car, Truck, or Bike. If your application has many places where vehicles are created, maintaining all these object creation codes in different classes becomes messy. 😩
+## Scenario:
 
-‍
+Imagine you're building a software system to manage vehicles for a transportation company. The system needs to create different types of vehicles such as:
 
-So, the problem is: How can we create vehicles easily and cleanly without hard-coding the class names everywhere in the code? 🤔
-
-‍
-
-🚀 Problem Statement: Creating Objects Dynamically
-🏗️ Scenario:
-
-Imagine you’re building a software system to manage vehicles for a transportation company. The system needs to create different types of vehicles such as:
-
-✅ Car 🚗
-
-✅ Truck 🚚
-
-✅ Bike 🏍️
-
-‍
+- ✅ Car 🚗
+- ✅ Truck 🚚
+- ✅ Bike 🏍️
 
 Each of these vehicles has different characteristics, but they all share a few common behaviors:
 
 🔹 start() ▶️
-
 🔹 stop() ⏹️
 
 ‍

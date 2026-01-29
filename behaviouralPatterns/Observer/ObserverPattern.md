@@ -1,56 +1,53 @@
 # Observer Design Pattern
 
 **Topic Tags:** LLD, System Design
+
 🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-‍
+## Observer Design Pattern: How to Stay Updated Without Constantly Checking 📲🔔
 
-Observer Design Pattern: How to Stay Updated Without Constantly Checking 📲🔔
-Imagine you’re watching your favorite YouTube channel. Every time they upload a new video, you get a notification. You don’t have to keep checking the channel to see if there’s something new. Instead, you get notified automatically when they post. This is exactly how the Observer Design Pattern works in software.
+Imagine you're watching your favorite YouTube channel. Every time they upload a new video, you get a notification. You don't have to keep checking the channel to see if there's something new. Instead, you get notified automatically when they post. This is exactly how the Observer Design Pattern works in software.
 
-‍
+### What is the Observer Pattern?
 
-In programming, the Observer Pattern allows one object (the subject) to notify other objects (the observers) whenever there is a change in its state. This is great for systems where certain parts of your application need to stay updated in real-time but shouldn’t be tightly coupled to each other.
+In programming, the Observer Pattern allows one object (the subject) to notify other objects (the observers) whenever there is a change in its state. This is great for systems where certain parts of your application need to stay updated in real-time but shouldn't be tightly coupled to each other.
 
-‍
+## Why Is It Called the Observer Pattern? 👀
 
-Why Is It Called the Observer Pattern? 👀
 The name Observer comes from the fact that some parts of the program (observers) are "watching" another part (subject) for changes. When something changes in the subject (for example, a new video is posted on YouTube), all the observers are notified. This keeps everything in sync without directly linking the two parts. So, the observers observe the subject for changes and react accordingly.
 
-‍
+## Solving the Problem Using the Traditional Method 🔧
 
-Solving the Problem Using the Traditional Method 🔧
-Let’s imagine a scenario where you have a YouTube channel, and you want to notify your subscribers every time a new video is uploaded. The traditional way to solve this problem could involve manually checking for updates each time.
+Let's imagine a scenario where you have a YouTube channel, and you want to notify your subscribers every time a new video is uploaded. The traditional way to solve this problem could involve manually checking for updates each time.
 
-Let’s write some code for this traditional approach. Here, the YouTubeChannel is the subject, and YouTubeSubscriber is the observer.
+### Traditional Approach Code
 
-‍
-
-Java
+```java
 import java.util.ArrayList;
 import java.util.List;
+
 class YouTubeChannel {
-  private List<String> subscribers = new ArrayList<>();
-  private String video;
+    private List<String> subscribers = new ArrayList<>();
+    private String video;
 
-  // Method to add a new subscriber
-  public void addSubscriber(String subscriber) {
-    subscribers.add(subscriber);
-  }
-
-  // Method to upload a new video
-  public void uploadNewVideo(String video) {
-    this.video = video;
-    notifySubscribers(); // Notify all subscribers about the new video
-  }
-
-  // Notify all subscribers
-  public void notifySubscribers() {
-    for (String subscriber : subscribers) {
-      System.out.println(
-          "Notifying " + subscriber + " about new video: " + video);
+    // Method to add a new subscriber
+    public void addSubscriber(String subscriber) {
+        subscribers.add(subscriber);
     }
-  }
+
+    // Method to upload a new video
+    public void uploadNewVideo(String video) {
+        this.video = video;
+        notifySubscribers(); // Notify all subscribers about the new video
+    }
+
+    // Notify all subscribers
+    public void notifySubscribers() {
+        for (String subscriber : subscribers) {
+            System.out.println(
+                "Notifying " + subscriber + " about new video: " + video);
+        }
+    }
 }
 
 class YouTubeSubscriber {
