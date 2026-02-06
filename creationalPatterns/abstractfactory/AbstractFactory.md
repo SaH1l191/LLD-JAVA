@@ -1,33 +1,30 @@
 # Abstract Factory Pattern
 
 **Topic Tags:** System Design, LLD
-🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-‍
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-Managing Families of Related Objects with Ease
-1. The Problem: Managing Different Car Brands 🚗
-Imagine you’re building a car dealership application that needs to create cars. Each car is a different type and comes from a different manufacturer, like Honda, Toyota, or BMW. Now, let’s say you need to create multiple car brands dynamically based on user input or some configuration.
+## Managing Families of Related Objects with Ease
 
-‍
+### 1. The Problem: Managing Different Car Brands 🚗
 
-You might think, "I’ll just create the car and move on," but as the system grows and the number of car brands increases, the code starts to get messy. You’ll find yourself repeating the logic of creating each type of car in multiple places, making the code hard to maintain.
+Imagine you're building a car dealership application that needs to create cars. Each car is a different type and comes from a different manufacturer, like Honda, Toyota, or BMW. Now, let's say you need to create multiple car brands dynamically based on user input or some configuration.
 
-‍
+You might think, "I'll just create the car and move on," but as the system grows and the number of car brands increases, the code starts to get messy. You'll find yourself repeating the logic of creating each type of car in multiple places, making the code hard to maintain.
 
-2. Solving the Problem with the Factory Method 🔧
-Let’s start by using the Factory Method pattern to solve the problem. In the Factory Method, we define a method for creating objects but let the subclasses decide which type of object to instantiate.
+### 2. Solving the Problem with the Factory Method 🔧
 
-Here’s how we might do this for car brands:
+Let's start by using the Factory Method pattern to solve the problem. In the Factory Method, we define a method for creating objects but let the subclasses decide which type of object to instantiate.
 
-‍
+Here's how we might do this for car brands:
 
-Java
+```java
 // Vehicle.java - Common Interface
 public interface Vehicle {
   void start();
   void stop();
 }
+
 // Concrete Classes for Car Brands
 public class Honda implements Vehicle {
   public void start() {
@@ -37,6 +34,7 @@ public class Honda implements Vehicle {
     System.out.println("Honda Car is stopping");
   }
 }
+
 public class Toyota implements Vehicle {
   public void start() {
     System.out.println("Toyota Car is starting");
@@ -45,6 +43,7 @@ public class Toyota implements Vehicle {
     System.out.println("Toyota Car is stopping");
   }
 }
+
 public class BMW implements Vehicle {
   public void start() {
     System.out.println("BMW Car is starting");
@@ -53,6 +52,7 @@ public class BMW implements Vehicle {
     System.out.println("BMW Car is stopping");
   }
 }
+
 // Factory Method to Create Vehicles
 public class CarFactory {
   public Vehicle createVehicle(String brand) {
@@ -67,6 +67,7 @@ public class CarFactory {
     }
   }
 }
+
 // Main Method
 public class Main {
   public static void main(String[] args) {
@@ -76,27 +77,22 @@ public class Main {
     vehicle.stop();
   }
 }
-‍
+```
 
-3. The Interviewer’s Follow-up Questions: Can We Improve This? 🤔
+### 3. The Interviewer's Follow-up Questions: Can We Improve This? 🤔
+
 An interviewer might ask:
 
-• What if we need to add more car brands later?
-
-• Is there a better way to manage the growing number of car brands and avoid repeating the createVehicle logic?
-
-‍
+- What if we need to add more car brands later?
+- Is there a better way to manage the growing number of car brands and avoid repeating the createVehicle logic?
 
 As you scale the application, the Factory Method becomes cumbersome. You have to go back to the CarFactory and modify the createVehicle method every time you want to add a new car brand. This leads to code duplication and hard-to-maintain code.
 
-‍
+### 4. The Ugly Truth: Our Code Needs Restructuring 😓
 
-4. The Ugly Truth: Our Code Needs Restructuring 😓
-Let’s say we decide to add a few more brands like Ford and Chevrolet. If we keep adding more if statements inside the createVehicle method, it starts to look ugly and hard to maintain:
+Let's say we decide to add a few more brands like Ford and Chevrolet. If we keep adding more if statements inside the createVehicle method, it starts to look ugly and hard to maintain:
 
-‍
-
-Java
+```java
 public Vehicle createVehicle(String brand) {
   if (brand.equals("Honda")) {
     return new Honda();
@@ -112,71 +108,53 @@ public Vehicle createVehicle(String brand) {
     throw new IllegalArgumentException("Unknown car brand");
   }
 }
-‍
+```
 
 This approach is difficult to extend. Every time a new car brand is introduced, you must modify this method, violating the Open-Closed Principle (open for extension, closed for modification).
 
-‍
+### 5. Introducing Our Savior: The Abstract Factory Pattern 💡
 
-5. Introducing Our Savior: The Abstract Factory Pattern 💡
 To solve this, we introduce the Abstract Factory Design Pattern. Unlike the Factory Method, the Abstract Factory allows us to handle the creation of related objects (like different car brands) without specifying their concrete classes directly.
-
-‍
 
 The Abstract Factory helps us manage families of related objects. Instead of adding new conditions to the createVehicle method every time a new car brand is introduced, we can create separate factories for each car brand that encapsulate their creation.
 
-‍
-Why is it Called the "Abstract Factory"? 🤔
-The name "Abstract Factory" comes from the concept of abstraction in programming. In simple terms, abstraction is the process of hiding the complex details of a system and exposing only the necessary parts.
+#### Why is it Called the "Abstract Factory"? 🤔
 
-‍
+The name "Abstract Factory" comes from the concept of abstraction in programming. In simple terms, abstraction is the process of hiding the complex details of a system and exposing only the necessary parts.
 
 In the Abstract Factory pattern, the "Abstract" part refers to the fact that the client code doesn’t know about the specific classes of objects being created. Instead of directly interacting with the concrete classes (like Honda, Toyota, or BMW), the client only knows about the factory interfaces (like VehicleFactory), which provide a method for creating objects without exposing the actual classes behind them.
 
-‍
-
 Think of it like ordering a car from a dealership. As a customer, you don’t need to know the intricate details of how each car is built or which parts are used. You just choose the type of car you want (Honda, Toyota, BMW), and the factory (dealership) handles the rest. This is the abstraction at play: you only deal with the abstract factory interface, not the specific car details.
 
-‍
+#### Why Is This Helpful? 🤩
 
-Why Is This Helpful? 🤩
 This level of abstraction brings several benefits:
 
 • Flexibility:
 
 You can add new products (car brands) by simply adding new factories. The client code doesn't need to be modified.
 
-‍
-
 • Maintainability:
 
 Changes to the creation process (like how a specific car is built) only need to happen inside the concrete factory, leaving the client code untouched.
-
-‍
 
 • Decoupling:
 
 The client doesn’t need to know the specifics of the objects it uses. It simply relies on the abstract factory, making the system more modular and easier to change.
 
-‍
-
 In short, the Abstract Factory provides an easy way to create families of related objects, and abstracts the creation process, making your code cleaner, more flexible, and easier to maintain.
 
-‍
+### 6. Solving the Problem Using Abstract Factory 🛠️
 
-6. Solving the Problem Using Abstract Factory 🛠️
 Let’s refactor the code to use the Abstract Factory pattern. We’ll define an Abstract Factory interface and create different concrete factories for each car brand.
 
-Article image
-
-‍
-
-Java
+```java
 // Vehicle.java - Common Interface
 public interface Vehicle {
   void start();
   void stop();
 }
+
 // Concrete Classes for Car Brands
 public class Honda implements Vehicle {
   public void start() {
@@ -186,6 +164,7 @@ public class Honda implements Vehicle {
     System.out.println("Honda Car is stopping");
   }
 }
+
 public class Toyota implements Vehicle {
   public void start() {
     System.out.println("Toyota Car is starting");
@@ -194,6 +173,7 @@ public class Toyota implements Vehicle {
     System.out.println("Toyota Car is stopping");
   }
 }
+
 public class BMW implements Vehicle {
   public void start() {
     System.out.println("BMW Car is starting");
@@ -202,26 +182,31 @@ public class BMW implements Vehicle {
     System.out.println("BMW Car is stopping");
   }
 }
+
 // Abstract Factory Interface
 public interface VehicleFactory {
   Vehicle createVehicle();
 }
+
 // Concrete Factories for Each Car Brand
 public class HondaFactory implements VehicleFactory {
   public Vehicle createVehicle() {
     return new Honda();
   }
 }
+
 public class ToyotaFactory implements VehicleFactory {
   public Vehicle createVehicle() {
     return new Toyota();
   }
 }
+
 public class BMWFactory implements VehicleFactory {
   public Vehicle createVehicle() {
     return new BMW();
   }
 }
+
 // Client Code
 public class Main {
   public static void main(String[] args) {
@@ -229,15 +214,17 @@ public class Main {
     Vehicle honda = hondaFactory.createVehicle();
     honda.start();
     honda.stop();
+    
     VehicleFactory toyotaFactory = new ToyotaFactory();
     Vehicle toyota = toyotaFactory.createVehicle();
     toyota.start();
     toyota.stop();
   }
 }
-‍
+```
 
-7. Solving the Follow-up Questions with the Abstract Factory 🔍
+### 7. Solving the Follow-up Questions with the Abstract Factory 🔍
+
 • What if we need to add more car brands later?
 
 With the Abstract Factory, adding a new car brand is simple. You only need to create a new concrete factory for the new car brand and implement the createVehicle method. No need to modify the client code or touch the existing factories.

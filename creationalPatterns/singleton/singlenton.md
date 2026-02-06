@@ -1,146 +1,105 @@
 # Singleton Design Pattern
 
 **Topic Tags:** LLD, System Design
-🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-‍
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
-Singleton Design Pattern: Ensuring Only One Instance 🔒
-The Problem We Need to Solve 🤔
-Let’s imagine you’re building a logging system for a large application. The goal is to have one and only one instance of the logger throughout the entire application. This means:
+## Singleton Design Pattern: Ensuring Only One Instance 🔒
 
-‍
+### The Problem We Need to Solve 🤔
 
-• No matter how many classes or threads use the logger, they all refer to the same object. 🔄
+Let's imagine you're building a logging system for a large application. The goal is to have one and only one instance of the logger throughout the entire application. This means:
 
-• This ensures that there are no multiple loggers created, which would waste resources. 💸
-
-‍
+- No matter how many classes or threads use the logger, they all refer to the same object. 🔄
+- This ensures that there are no multiple loggers created, which would waste resources. 💸
 
 The log refers to the messages that the Logger object writes, helping track and monitor system events, user actions, and errors in a consistent manner across your entire application. 📊
 
-‍
-
 For example, a Logger might log:
-
-• A successful login: "User 'john_doe' logged in successfully" ✅
-
-• A failed login: `"ERROR: Invalid login attempt for user 'john_doe'" ❌
-
-• An exception: "ERROR: NullPointerException at line 42 in UserService.java" ⚠️
-
-‍
+- A successful login: "User 'john_doe' logged in successfully" ✅
+- A failed login: `"ERROR: Invalid login attempt for user 'john_doe'"` ❌
+- An exception: "ERROR: NullPointerException at line 42 in UserService.java" ⚠️
 
 Now, you might think, "Why not just create a new logger every time I need it?" 🤷‍♂️ Well, here's the issue: creating multiple instances of the logger could cause issues with memory usage, or even worse, inconsistent logging if multiple loggers are trying to write to the log at the same time. 😱
 
-‍
-
 By having a single instance of the Logger, you ensure that all parts of your application write these log entries to the same location (e.g., a file, database, or console), making it easier to monitor and debug the system. 🔍
-
-‍
 
 This is where the Singleton Design Pattern comes in! 🎉 It allows you to create only one instance of a class and ensures that all parts of your application use that same instance. One logger instance ensures that all logs go to the same place and are written in the same format, making your logs more useful and easier to manage. 😊
 
-‍
-
-Solving the Problem with the Traditional Approach (Not the Best Way) 🔧
+## Solving the Problem with the Traditional Approach (Not the Best Way) 🔧
 
 So, you start by creating a simple Logger class. The idea is that the Logger will handle writing messages to the console or a log file.
 
-‍
-
 Here's the Logger class:
 
-Java
+```java
 public class Logger {
   public void log(String message) {
     System.out.println("Log: " + message);
   }
 }
-‍
+```
 
 It looks simple enough. Now, you need to use this logger in your application to keep track of important events. So, you go ahead and create a new Logger instance every time you need it.
 
-‍
-
 For example, in the Application class, you create a new instance of the Logger and use it to log a message:
 
-Java
+```java
 public class Application {
     public void run() {
         Logger logger = new Logger();  // New instance created every time
         logger.log("Application started.");
     }
 }
-‍
+```
 
-The Problem: Multiple Instances of the Logger
-This approach seems to work fine at first. However, let’s stop and think for a second: What’s happening here every time we call the run() method?
+### The Problem: Multiple Instances of the Logger
 
-‍
+This approach seems to work fine at first. However, let's stop and think for a second: What's happening here every time we call the run() method?
 
 Each time the run() method is executed, a new Logger instance is created. This means that the application is constantly creating new instances of the logger, even though all these loggers are supposed to do the same job: log messages.
 
-‍
-
 Now, imagine that you have several classes in your application that need to log messages. For example, you might also have a UserService class that handles user actions like logging in:
 
-Java
+```java
 public class UserService {
     public void login(String username) {
         Logger logger = new Logger();  // Another new instance created
         logger.log("User " + username + " logged in.");
     }
 }
-‍
+```
 
-In the UserService class, you’re creating a new logger instance every time a user logs in. So, now you have two loggers running in your application — one in Application and one in UserService.
+In the UserService class, you're creating a new logger instance every time a user logs in. So, now you have two loggers running in your application — one in Application and one in UserService.
 
-‍
+### Interviewer's Question: Can We Improve This? 🤔
 
-Interviewer's Question: Can We Improve This? 🤔
 An interviewer might ask:
 
-• What if you want to make sure only one instance of Logger exists across the entire application? 🔑
-
-• How can we avoid creating multiple instances of Logger? 🚫
-
-• Is this the most efficient way to handle the logging system? ⚡
-
-‍
+* What if you want to make sure only one instance of Logger exists across the entire application? 🔑
+* How can we avoid creating multiple instances of Logger? 🚫
+* Is this the most efficient way to handle the logging system? ⚡
 
 As we can see, this code is creating a new Logger object every time, which is inefficient. We need to ensure that only one instance of the logger exists, no matter how many times we reference it. 🛠️
 
-‍
+### The Problem with the Traditional Approach: Messy and Inefficient 😓
 
-The Problem with the Traditional Approach: Messy and Inefficient 😓
 The issue with this approach is that every part of the application (like Application, UserService, etc.) creates a new instance of the Logger class when they need to log something. This creates several problems:
 
-1. Multiple Instances of Logger:
+1. **Multiple Instances of Logger:**
+   * If different parts of the system are creating multiple instances of the Logger, it leads to inefficient resource usage. If you are logging to a file, for example, each logger might try to access and write to the file at the same time, leading to potential conflicts or overhead. 📝⚠️
 
-○ If different parts of the system are creating multiple instances of the Logger, it leads to inefficient resource usage. If you are logging to a file, for example, each logger might try to access and write to the file at the same time, leading to potential conflicts or overhead. 📝⚠️
+2. **Inconsistent Logging:**
+   * With multiple loggers, you might end up with log messages spread across different log files or inconsistent output in the same log file, as each instance of the Logger might manage its own logging output. This makes debugging and monitoring harder. 🔍📉
 
-‍
+3. **Difficulty Managing State:**
+   * If the logger has state-related data (e.g., which log file it writes to, configuration settings, etc.), creating multiple instances means that each logger could have a different state. This would cause inconsistency in how logs are managed and stored. ⚖️💼
 
-2. Inconsistent Logging:
-
-○ With multiple loggers, you might end up with log messages spread across different log files or inconsistent output in the same log file, as each instance of the Logger might manage its own logging output. This makes debugging and monitoring harder. 🔍📉
-
-‍
-
-3. Difficulty Managing State:
-
-○ If the logger has state-related data (e.g., which log file it writes to, configuration settings, etc.), creating multiple instances means that each logger could have a different state. This would cause inconsistency in how logs are managed and stored. ⚖️💼
-
-‍
-
-If we wanted to make sure there was only one logger, we would have to check for the existence of an existing instance of the Logger each time we want to use it, and that would make the code ugly and complex. You’d end up with a lot of extra code to track and manage the instance. 🤦‍♂️🛠️
-
-‍
+If we wanted to make sure there was only one logger, we would have to check for the existence of an existing instance of the Logger each time we want to use it, and that would make the code ugly and complex. You'd end up with a lot of extra code to track and manage the instance. 🤦‍♂️🛠️
 
 For example:
 
-Java
+```java
 public class Logger {
   private static Logger logger = null;
   private Logger() {} // Private constructor to prevent external instantiation
@@ -162,44 +121,31 @@ public class Application {
     logger.log("Application started.");
   }
 }
-‍
+```
 
-Enter Our Savior: The Singleton Design Pattern 😎
+### Enter Our Savior: The Singleton Design Pattern 😎
+
 Now, we introduce our savior: the Singleton Design Pattern. The Singleton pattern ensures that a class has only one instance and provides a global point of access to that instance. 🌍
-
-‍
 
 The Singleton Design Pattern is called "Singleton" because it ensures that a class has only one instance throughout the entire system, and it provides a global point of access to that instance.
 
-The word "single" in "Singleton" refers to the fact that the class will have only one instance, no matter how many times it’s accessed or instantiated. The pattern guarantees that there is only one object of that class at any given time. 🔑
+The word "single" in "Singleton" refers to the fact that the class will have only one instance, no matter how many times it's accessed or instantiated. The pattern guarantees that there is only one object of that class at any given time. 🔑
 
-‍
-
-To put it simply, just like how a singleton (a person) is unique and exists only once in a specific context, the Singleton pattern ensures that only one object of a certain class is created, and it’s used across the whole application. 🎯
-
-‍
+To put it simply, just like how a singleton (a person) is unique and exists only once in a specific context, the Singleton pattern ensures that only one object of a certain class is created, and it's used across the whole application. 🎯
 
 In short:
+* "Single" = Only one instance. 1️⃣
+* "Ton" = Ensures that instance is accessible globally. 🌐
 
-• "Single" = Only one instance. 1️⃣
+It's called Singleton because it focuses on creating a single, unique instance that is shared across the entire application, making it efficient and manageable. 😊
 
-• "Ton" = Ensures that instance is accessible globally. 🌐
-
-It’s called Singleton because it focuses on creating a single, unique instance that is shared across the entire application, making it efficient and manageable. 😊
-
-‍
-
-Here’s how the Singleton works:
+Here's how the Singleton works:
 
 1. We make the constructor private, so no one can directly instantiate the class. 🚫
-
 2. We create a static instance of the class inside the class itself. 📦
+3. We provide a public static method (getInstance()) to return the single instance of the class. 🔄
 
-We provide a public static method (getInstance()) to return the single instance of the class. 🔄
-
-‍
-
-Java
+```java
 public class Logger {
   // 1. Private static variable to hold the single instance
   private static Logger instance;
@@ -226,13 +172,13 @@ public class Application {
     logger.log("Application started.");
   }
 }
-‍
+```
 
 Article image
 
 ‍
 
-Solving the Follow-up Questions Using Singleton 😄
+### Solving the Follow-up Questions Using Singleton 😄
 Now that we’ve applied the Singleton pattern, let’s see how we can address the interviewer’s follow-up questions:
 
 • What if we want only one Logger instance? 🔑 

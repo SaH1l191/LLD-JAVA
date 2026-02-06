@@ -1,10 +1,15 @@
 # DRY Principle
+================
 
-**Topic Tags:** Design Patterns, System Design, LLD
+### Topic Tags: Design Patterns, System Design, LLD
 
- Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-ary-0077/CWA-LowLevelDesignCode
 
-In the world of software development, clean and maintainable code is the foundation of scalable and robust applications. One of the core principles that guides developers in achieving this is the DRY Principle.
+## Introduction
+
+In the world of software development, clean and maintainable code is the foundation of scalable and robust applications. One of the core principles that guides developers in achieving this is the **DRY Principle**.
+
+### What is DRY?
 
 DRY stands for **Don't Repeat Yourself**, and adhering to this principle can significantly improve code quality and reduce redundancy.
 

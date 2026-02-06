@@ -1,4 +1,10 @@
 
+
+
+/////one statement : instrinsic & extrinsic state + memory opetionmation 
+///// from repeated similar object creation like a cache system. 
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

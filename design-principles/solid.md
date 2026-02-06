@@ -1,11 +1,16 @@
 # SOLID Principles
 
 **Topic Tags:**
-- Design Patterns
-- System Design
-- LLD
+---------------
+
+* Design Patterns
+* System Design
+* LLD
 
 🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
+
+## Introduction
+------------
 
 Software development is a complex field that requires careful planning and design to ensure that applications are maintainable, scalable, and easy to understand. One of the foundational guidelines for achieving these goals is the set of SOLID principles.
 
@@ -18,6 +23,7 @@ SOLID principles are five essential guidelines that enhance software design, mak
 5. **Dependency Inversion Principle** 🔗
 
 ## Need for SOLID Principles in Object-Oriented Design
+---------------------------------------------------
 
 Below are some of the main reasons why SOLID principles are important in object-oriented design:
 
@@ -28,31 +34,7 @@ Below are some of the main reasons why SOLID principles are important in object-
 
 Adopting SOLID principles is a key step toward mastering clean code and professional software development.
 
-‍
-
-💭Example:
-Imagine a baker who is responsible for baking bread. The baker’s role is to focus on the task of baking bread, ensuring that the bread is of high quality, properly baked, and meets the bakery’s standards.
-
-However, if the baker is also responsible for managing the inventory, ordering supplies, serving customers, and cleaning the bakery, this would violate the SRP. Each of these tasks represents a separate responsibility, and by combining them, the baker’s focus and effectiveness in baking bread could be compromised.
-
-‍
-
-Java
-// Class with multiple responsibilities
-class BreadBaker {
- public
-  void bakeBread() { System.out.println("Baking high-quality bread..."); }
-
- public
-  void manageInventory() { System.out.println("Managing inventory..."); }
-
- public
-  void orderSupplies() { System.out.println("Ordering supplies..."); }
-
- public
-  void serveCustomer() { System.out.println("Serving customers..."); }
-
- public
+...
   void cleanBakery() { System.out.println("Cleaning the bakery..."); }
 
  public

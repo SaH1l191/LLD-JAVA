@@ -1,12 +1,11 @@
 # Abstract Factory Design Pattern
 
-🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
 ## Code Example
 
 ```java
-package asbtractfactory;
-import factory.Vehicle;
+package abstractfactory;
 
 public interface Vehicle {
   void start();
@@ -22,6 +21,7 @@ public class Honda implements Vehicle {
     System.out.println("Honda Car is stopping");
   }
 }
+
 public class Toyota implements Vehicle {
   public void start() {
     System.out.println("Toyota Car is starting");
@@ -30,6 +30,7 @@ public class Toyota implements Vehicle {
     System.out.println("Toyota Car is stopping");
   }
 }
+
 public class BMW implements Vehicle {
   public void start() {
     System.out.println("BMW Car is starting");
@@ -38,6 +39,7 @@ public class BMW implements Vehicle {
     System.out.println("BMW Car is stopping");
   }
 }
+
 // Factory Method to Create Vehicles
 public class CarFactory {
   public Vehicle createVehicle(String brand) {
@@ -52,6 +54,7 @@ public class CarFactory {
     }
   }
 }
+
 // Main Method
 public class Main {
   public static void main(String[] args) {
@@ -61,27 +64,22 @@ public class Main {
     vehicle.stop();
   }
 }
-‍
+```
 
-3. The Interviewer’s Follow-up Questions: Can We Improve This? 🤔
+### 3. The Interviewer's Follow-up Questions: Can We Improve This? 🤔
+
 An interviewer might ask:
 
-• What if we need to add more car brands later?
-
-• Is there a better way to manage the growing number of car brands and avoid repeating the createVehicle logic?
-
-‍
+- What if we need to add more car brands later?
+- Is there a better way to manage the growing number of car brands and avoid repeating the createVehicle logic?
 
 As you scale the application, the Factory Method becomes cumbersome. You have to go back to the CarFactory and modify the createVehicle method every time you want to add a new car brand. This leads to code duplication and hard-to-maintain code.
 
-‍
+### 4. The Ugly Truth: Our Code Needs Restructuring 😓
 
-4. The Ugly Truth: Our Code Needs Restructuring 😓
-Let’s say we decide to add a few more brands like Ford and Chevrolet. If we keep adding more if statements inside the createVehicle method, it starts to look ugly and hard to maintain:
+Let's say we decide to add a few more brands like Ford and Chevrolet. If we keep adding more if statements inside the createVehicle method, it starts to look ugly and hard to maintain:
 
-‍
-
-Java
+```java
 public Vehicle createVehicle(String brand) {
   if (brand.equals("Honda")) {
     return new Honda();
@@ -97,11 +95,11 @@ public Vehicle createVehicle(String brand) {
     throw new IllegalArgumentException("Unknown car brand");
   }
 }
-‍
+```
 
 This approach is difficult to extend. Every time a new car brand is introduced, you must modify this method, violating the Open-Closed Principle (open for extension, closed for modification).
 
-‍
+### 5. Introducing Our Savior: The Abstract Factory Pattern 💡
 
 5. Introducing Our Savior: The Abstract Factory Pattern 💡
 To solve this, we introduce the Abstract Factory Design Pattern. Unlike the Factory Method, the Abstract Factory allows us to handle the creation of related objects (like different car brands) without specifying their concrete classes directly.

@@ -22,65 +22,27 @@ Each time you need to create a vehicle, you have to decide manually which class 
 
 If your application has many places where vehicles are created, maintaining all these object creation codes in different classes becomes messy!
 
-**Hard-coding class names everywhere = bad maintainability!**
-
 ### The Challenge
 
 How can we create vehicles easily and cleanly without hard-coding the class names everywhere in the code?
 
-‍
+## 🔧 Solving it with Traditional Approach
 
-## Scenario:
-
-Imagine you're building a software system to manage vehicles for a transportation company. The system needs to create different types of vehicles such as:
-
-- ✅ Car 🚗
-- ✅ Truck 🚚
-- ✅ Bike 🏍️
-
-Each of these vehicles has different characteristics, but they all share a few common behaviors:
-
-🔹 start() ▶️
-🔹 stop() ⏹️
-
-‍
-
-⚠️ The Problem
-
-Each time you need to create a vehicle, you have to decide manually which class to instantiate:
-
-➡️ Car 🚗
-
-➡️ Truck 🚛
-
-➡️ Bike 🏍️
-
-If your application has many places where vehicles are created, maintaining all these object creation codes in different classes becomes messy 😵‍💫💥!
-
-‍
-
-🤯 Hard-coding class names everywhere = bad maintainability!
-
-‍
-
-❓ The Challenge
-
-How can we create vehicles easily and cleanly without hard-coding the class names everywhere in the code?
-
-‍
-
-🔧 Solving it with Traditional Approach
 Let's start by solving the problem in the traditional way, where each class creates its own objects!
 
-‍
+### Vehicle Interface
 
-Java
+```java
 // Vehicle.java - Common interface
 public interface Vehicle {
   void start();
   void stop();
 }
+```
 
+### Concrete Vehicle Classes
+
+```java
 // Car.java - Concrete class for Car
 public class Car implements Vehicle {
   public void start() {
@@ -110,7 +72,11 @@ public class Bike implements Vehicle {
     System.out.println("Bike is stopping...");
   }
 }
+```
 
+### Main Class
+
+```java
 // Main.java - Code to create vehicles
 public class Main {
   public static void main(String[] args) {
@@ -125,35 +91,26 @@ public class Main {
     vehicle3.stop();
   }
 }
-‍
+```
 
 Here, the Main class creates each vehicle explicitly by calling the constructor of the respective vehicle class. But what if we need to add more vehicle types later, or if we need to change the way vehicles are created? 🤷‍♂️
 
-‍
+### Interviewer's Follow-up Questions: Can We Improve the Code?
 
-🤔 Interviewer’s Follow-up Questions: Can We Improve the Code?
 An interviewer might ask:
 
-• What if we need to add more vehicle types in the future? 🚙
-
-• What if the logic of vehicle creation changes? 🔧
-
-‍
+* What if we need to add more vehicle types in the future? 🚙
+* What if the logic of vehicle creation changes? 🔧
 
 In this case, the code could become harder to maintain as you add more vehicle types or change the vehicle creation logic. For example, if you had to introduce new behavior or properties for vehicle creation, you would need to modify the creation code in many places, which could lead to potential errors. 😱
 
-‍
+### Ugly Code: When We Realize the Code Needs Restructuring
 
-🛠️ Ugly Code: When We Realize the Code Needs Restructuring
-Let’s say, instead of creating vehicles directly, the vehicle creation process is now complex. For example, you have to choose the vehicle based on user input, configuration files, or network requests. If you don’t address this early on, the object creation code quickly becomes cumbersome and ugly. 🤦‍♂️
-
-‍
+Let's say, instead of creating vehicles directly, the vehicle creation process is now complex. For example, you have to choose the vehicle based on user input, configuration files, or network requests. If you don't address this early on, the object creation code quickly becomes cumbersome and ugly. 🤦‍♂️
 
 It might look something like this:
 
-‍
-
-Java
+```java
 // Main.java becomes a mess as you add more vehicle creation logic
 public class Main {
   public static void main(String[] args) {
@@ -172,27 +129,21 @@ public class Main {
     vehicle.stop();
   }
 }
-‍
+```
 
 This code is fragile. If we want to add another vehicle type, we need to modify this code again, which is error-prone and hard to maintain. 😖
 
-‍
+### The Savior: Factory Design Pattern
 
-🦸‍♂️ The Savior: Factory Design Pattern
-Now, let’s introduce the Factory Design Pattern to rescue us. 🦸‍♀️ The Factory Pattern will allow us to handle the object creation in a centralized manner, so that we don't need to keep repeating the logic of choosing which vehicle to create in multiple places.
-
-‍
+Now, let's introduce the Factory Design Pattern to rescue us. 🦸‍♀️ The Factory Pattern will allow us to handle the object creation in a centralized manner, so that we don't need to keep repeating the logic of choosing which vehicle to create in multiple places.
 
 The Factory Design Pattern is named after a "factory" because, just like a factory produces different types of products, the pattern provides a central place (the factory) to create objects of different types. 🏭 Instead of directly instantiating objects, the factory method is responsible for producing the correct object, making the system more flexible and organized.
 
-‍
+### Solving the Problem with Factory Design Pattern
 
-🏭 Solving the Problem with Factory Design Pattern
 Here’s how we can solve this problem by introducing a Factory that creates the vehicles:
 
-‍
-
-Java
+```java
 // Vehicle.java - Common interface
 public interface Vehicle {
   void start();

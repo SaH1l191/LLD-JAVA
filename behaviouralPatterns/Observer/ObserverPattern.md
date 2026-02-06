@@ -2,7 +2,7 @@
 
 **Topic Tags:** LLD, System Design
 
-🐈‍⬛ Github Codes Link: https://github.com/aryan-0077/CWA-LowLevelDesignCode
+🐈‍⬛ **Github Codes Link:** https://github.com/aryan-0077/CWA-LowLevelDesignCode
 
 ## Observer Design Pattern: How to Stay Updated Without Constantly Checking 📲🔔
 
@@ -62,28 +62,21 @@ class YouTubeSubscriber {
     System.out.println(name + " is watching the video: " + channel.video);
   }
 }
-‍
+```
 
-Why Is This Approach Not Ideal? 😕
-• Manual Checking:
+### Why Is This Approach Not Ideal? 😕
 
+**Manual Checking:**
 In this approach, we manually notify each subscriber every time a new video is uploaded. If there are hundreds of subscribers, this becomes cumbersome.
 
-‍
-
-• Not Scalable:
-
+**Not Scalable:**
 Adding a new notification method (e.g., email, SMS) requires modifying the YouTubeChannel class, which leads to tight coupling and difficult maintenance.
 
-‍
-
-• Hard to Extend:
-
+**Hard to Extend:**
 If we wanted to add more observers (for example, send notifications through an app), we would have to touch the YouTubeChannel class, breaking the open/closed principle.
 
-‍
+### Interviewer’s Questions: What’s Wrong with This? 🤔
 
-Interviewer’s Questions: What’s Wrong with This? 🤔
 Now, an interviewer might ask:
 
 • What happens if you have a lot of subscribers? 

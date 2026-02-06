@@ -1,4 +1,9 @@
 
+
+
+//one statement : connects two incompatible interfaces.
+
+
 //messy code : 
 
 // • What if we need to add more devices in the future? For example,

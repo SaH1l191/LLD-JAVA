@@ -4,6 +4,14 @@ import java.util.Map;
 
 
 //acts as a proxy for another class 
+// one sentence : 
+
+// Use Proxy whenever you want to do something on behalf of another object while
+//  keeping the original object’s code clean and focused
+
+//interface for funcitionalites of main functionallity + the 
+// proxy class overidding the same funcitonality ( ie, the interface )
+
 interface VideoService {
 
     void playVideo(String userId, String videoName);
