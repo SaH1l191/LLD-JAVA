@@ -191,10 +191,14 @@ class ParkingFloor {
     }
 }
 class ParkingLot {
-    List<ParkingFloor> parkingFloors =new ArrayList<>(); ;
- 
+    List<ParkingFloor> parkingFloors =new ArrayList<>();
+    
+    private ParkingLot(List<ParkingFloor> floors) {
+        this.parkingFloors = floors;
+    }
+
     public void addParkingFloor(ParkingFloor[] parkingFloorsArray) {
-        java.util.Collections.addAll(parkingFloors, parkingFloorsArray);
+        Collections.addAll(parkingFloors, parkingFloorsArray);
     }
 
     public synchronized ParkingSpot findAvailableSpot(VehicleType type) {
@@ -206,6 +210,35 @@ class ParkingLot {
             }
         }
         return null;
+    }
+
+    public static Builder build() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final List<ParkingFloor> floors = new ArrayList<>();
+
+        public Builder addFloor(int carSpots,int bikeSpots, int truckSpots){
+            ParkingFloor floor = new ParkingFloor();
+            List<ParkingSpot> spots = new ArrayList<>();
+
+            for(int i=0;i<carSpots;i++) {
+                spots.add(new ParkingSpot(VehicleType.CAR));
+            }
+            for(int i=0;i<bikeSpots;i++) {
+                spots.add(new ParkingSpot(VehicleType.MOTORCYCLE));
+            }
+            for(int i=0;i<truckSpots;i++) {
+                spots.add(new ParkingSpot(VehicleType.TRUCK));
+            }
+            floor.addParkingSpots(spots.toArray(new ParkingSpot[0]));
+            floors.add(floor);
+            return this;
+        }
+        public ParkingLot build() {
+            return new ParkingLot(floors);
+        }
     }
 }
 
@@ -286,201 +319,196 @@ class ParkingService {
 
 }
 
-public class Main {
-    public static void main(String[] args) {
-        ParkingLot parkingLot = new ParkingLot();
-        ParkingFloor floor1 = new ParkingFloor();
-        ParkingFloor[] floors = new ParkingFloor[1];
-        floors[0] = floor1;
-        ParkingSpot[] spots = new ParkingSpot[4];
-        spots[0] = new ParkingSpot(VehicleType.CAR);
-        spots[1] = new ParkingSpot(VehicleType.MOTORCYCLE);
-        spots[2] = new ParkingSpot(VehicleType.TRUCK);
-        spots[3] = new ParkingSpot(VehicleType.CAR);
-        floor1.addParkingSpots(spots);
-        parkingLot.addParkingFloor(floors);
+// public class Main {
+//     public static void main(String[] args) {
+//         // ParkingLot parkingLot = new ParkingLot();
+//         // ParkingFloor floor1 = new ParkingFloor();
+//         // ParkingFloor[] floors = new ParkingFloor[1];
+//         // floors[0] = floor1;
+//         // ParkingSpot[] spots = new ParkingSpot[4];
+//         // spots[0] = new ParkingSpot(VehicleType.CAR);
+//         // spots[1] = new ParkingSpot(VehicleType.MOTORCYCLE);
+//         // spots[2] = new ParkingSpot(VehicleType.TRUCK);
+//         // spots[3] = new ParkingSpot(VehicleType.CAR);
+//         // floor1.addParkingSpots(spots);
+//         // parkingLot.addParkingFloor(floors);
+
+//         ParkingLot parkingLot = ParkingLot.build()
+//         .addFloor(2, 1, 1)   // Floor 1
+//         .addFloor(3, 2, 0)   // Floor 2
+//         .build();
 
 
-        ParkingService service = new ParkingService(parkingLot,new EntryGate(),new ExitGate());
+//         ParkingService service = new ParkingService(parkingLot,new EntryGate(),new ExitGate());
 
-        VehicleFactory carFactory = new CarFactory();
-        Vehicle car = carFactory.createVehicle("MH12AB1234");
-        ParkingTicket ticket = service.enter(car);
-        try{
-            Thread.sleep(9000); 
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        } 
-        service.exit(ticket,new HourlyRateStrategy(),new CashPayment());
-
-
+//         VehicleFactory carFactory = new CarFactory();
+//         Vehicle car = carFactory.createVehicle("MH12AB1234");
+//         ParkingTicket ticket = service.enter(car);
+//         try{
+//             Thread.sleep(9000); 
+//         }catch(InterruptedException e){
+//             e.printStackTrace();
+//         } 
+//         service.exit(ticket,new HourlyRateStrategy(),new CashPayment());
 
 
-        VehicleFactory motoVehicleFactory = new MotorcycleFactory();
-        Vehicle motorcycle = motoVehicleFactory.createVehicle("MH12CD5678");
-
-        VehicleFactory truckFactory = new TruckFactory();
-        Vehicle truck = truckFactory.createVehicle("MH12EF9012");
 
 
+//         VehicleFactory motoVehicleFactory = new MotorcycleFactory();
+//         Vehicle motorcycle = motoVehicleFactory.createVehicle("MH12CD5678");
+
+//         VehicleFactory truckFactory = new TruckFactory();
+//         Vehicle truck = truckFactory.createVehicle("MH12EF9012");
+
+
+//     }
+// }
+
+
+// testing ParkingService class with all testcases
+ // testing ParkingService class with all testcases
+class ParkingLotTester {
+
+    private ParkingService service;
+    private ParkingLot parkingLot;
+
+    public ParkingLotTester() {
+        setup();
+    }
+
+    private void setup() {
+
+        // ✅ Use Builder instead of direct constructor
+        parkingLot = ParkingLot.build()
+                .addFloor(1, 1, 1)   // 1 CAR, 1 MOTORCYCLE, 1 TRUCK
+                .build();
+
+        service = new ParkingService(
+                parkingLot,
+                new EntryGate(),
+                new ExitGate()
+        );
+    }
+
+    /* =============================
+       TEST CASES
+    ============================== */
+
+    public void runAllTests() {
+        testSuccessfulEntryExit();
+        testNoSpotAvailable();
+        testSpotReleaseAfterExit();
+        testMultipleVehicles();
+    }
+
+    private void printResult(String testName, boolean result) {
+        System.out.println(testName + " : " + (result ? "PASS" : "FAIL"));
+        System.out.println("-----------------------------------");
+    }
+
+    /* =============================
+       TEST 1: Successful Entry & Exit
+    ============================== */
+
+    private void testSuccessfulEntryExit() {
+        try {
+            Vehicle car = new Car("TEST123");
+            ParkingTicket ticket = service.enter(car);
+
+            Thread.sleep(2000);
+
+            service.exit(ticket,
+                    new HourlyRateStrategy(),
+                    new CashPayment());
+
+            boolean passed = ticket.getStatus() == Status.PAID;
+            printResult("Test Successful Entry & Exit", passed);
+
+        } catch (Exception e) {
+            printResult("Test Successful Entry & Exit", false);
+        }
+    }
+
+    /* =============================
+       TEST 2: No Spot Available
+    ============================== */
+
+    private void testNoSpotAvailable() {
+        try {
+            Vehicle car1 = new Car("CAR1");
+            Vehicle car2 = new Car("CAR2");
+
+            service.enter(car1);
+
+            // Only 1 car spot exists → second should fail
+            service.enter(car2);
+
+            printResult("Test No Spot Available", false);
+
+        } catch (RuntimeException e) {
+            printResult("Test No Spot Available", true);
+        }
+    }
+
+    /* =============================
+       TEST 3: Spot Release After Exit
+    ============================== */
+
+    private void testSpotReleaseAfterExit() {
+        try {
+            Vehicle truck = new Truck("TRK1");
+            ParkingTicket ticket = service.enter(truck);
+
+            service.exit(ticket,
+                    new HourlyRateStrategy(),
+                    new CashPayment());
+
+            boolean spotAvailable = ticket.getSpot().isAvailable();
+
+            printResult("Test Spot Release After Exit", spotAvailable);
+
+        } catch (Exception e) {
+            printResult("Test Spot Release After Exit", false);
+        }
+    }
+
+    /* =============================
+       TEST 4: Multiple Vehicle Flow
+    ============================== */
+
+    private void testMultipleVehicles() {
+        try {
+            Vehicle moto = new Motorcycle("MOTO1");
+            Vehicle truck = new Truck("TRUCK1");
+
+            ParkingTicket t1 = service.enter(moto);
+            ParkingTicket t2 = service.enter(truck);
+
+            Thread.sleep(1000);
+
+            service.exit(t1,
+                    new HourlyRateStrategy(),
+                    new CashPayment());
+
+            service.exit(t2,
+                    new PremiumRateStrategy(),
+                    new CreditCardPayment());
+
+            boolean passed =
+                    t1.getStatus() == Status.PAID &&
+                    t2.getStatus() == Status.PAID;
+
+            printResult("Test Multiple Vehicles", passed);
+
+        } catch (Exception e) {
+            printResult("Test Multiple Vehicles", false);
+        }
     }
 }
 
-
-
-//testing ParkingService class with all testcases
-// class ParkingLotTester {
-
-//     private ParkingService service;
-//     private ParkingLot parkingLot;
-
-//     public ParkingLotTester() {
-//         setup();
-//     }
-
-//     private void setup() {
-//         parkingLot = new ParkingLot();
-//         ParkingFloor floor = new ParkingFloor();
-
-//         ParkingSpot[] spots = new ParkingSpot[]{
-//                 new ParkingSpot(VehicleType.CAR),
-//                 new ParkingSpot(VehicleType.MOTORCYCLE),
-//                 new ParkingSpot(VehicleType.TRUCK)
-//         };
-
-//         floor.addParkingSpots(spots);
-//         parkingLot.addParkingFloor(new ParkingFloor[]{floor});
-
-//         service = new ParkingService(parkingLot,
-//                 new EntryGate(),
-//                 new ExitGate());
-//     }
-
-//     /* =============================
-//        TEST CASES
-//     ============================== */
-
-//     public void runAllTests() {
-//         testSuccessfulEntryExit();
-//         testNoSpotAvailable();
-//         testSpotReleaseAfterExit();
-//         testMultipleVehicles();
-//     }
-
-//     private void printResult(String testName, boolean result) {
-//         System.out.println(testName + " : " + (result ? "PASS" : "FAIL"));
-//         System.out.println("-----------------------------------");
-//     }
-
-//     /* =============================
-//        TEST 1: Successful Entry & Exit
-//     ============================== */
-
-//     private void testSuccessfulEntryExit() {
-//         try {
-//             Vehicle car = new Car("TEST123");
-//             ParkingTicket ticket = service.enter(car);
-
-//             Thread.sleep(2000);
-
-//             service.exit(ticket,
-//                     new HourlyRateStrategy(),
-//                     new CashPayment());
-
-//             boolean passed = ticket.getStatus() == Status.PAID;
-//             printResult("Test Successful Entry & Exit", passed);
-
-//         } catch (Exception e) {
-//             printResult("Test Successful Entry & Exit", false);
-//         }
-//     }
-
-//     /* =============================
-//        TEST 2: No Spot Available
-//     ============================== */
-
-//     private void testNoSpotAvailable() {
-//         try {
-//             Vehicle car1 = new Car("CAR1");
-//             Vehicle car2 = new Car("CAR2");
-
-//             ParkingTicket t1 = service.enter(car1);
-
-//             // No second car spot exists
-//             service.enter(car2);
-
-//             printResult("Test No Spot Available", false);
-
-//         } catch (RuntimeException e) {
-//             printResult("Test No Spot Available", true);
-//         }
-//     }
-
-//     /* =============================
-//        TEST 3: Spot Release After Exit
-//     ============================== */
-
-//     private void testSpotReleaseAfterExit() {
-//         try {
-//             Vehicle truck = new Truck("TRK1");
-//             ParkingTicket ticket = service.enter(truck);
-
-//             service.exit(ticket,
-//                     new HourlyRateStrategy(),
-//                     new CashPayment());
-
-//             boolean spotAvailable = ticket.getSpot().isAvailable();
-
-//             printResult("Test Spot Release After Exit", spotAvailable);
-
-//         } catch (Exception e) {
-//             printResult("Test Spot Release After Exit", false);
-//         }
-//     }
-
-//     /* =============================
-//        TEST 4: Multiple Vehicle Flow
-//     ============================== */
-
-//     private void testMultipleVehicles() {
-//         try {
-//             Vehicle moto = new Motorcycle("MOTO1");
-//             Vehicle truck = new Truck("TRUCK1");
-
-//             ParkingTicket t1 = service.enter(moto);
-//             ParkingTicket t2 = service.enter(truck);
-
-//             Thread.sleep(1000);
-
-//             service.exit(t1,
-//                     new HourlyRateStrategy(),
-//                     new CashPayment());
-
-//             service.exit(t2,
-//                     new PremiumRateStrategy(),
-//                     new CreditCardPayment());
-
-//             boolean passed =
-//                     t1.getStatus() == Status.PAID &&
-//                     t2.getStatus() == Status.PAID;
-
-//             printResult("Test Multiple Vehicles", passed);
-
-//         } catch (Exception e) {
-//             printResult("Test Multiple Vehicles", false);
-//         }
-//     }
-// }
-
-
-// //testing Main class with all testcases 
-// public class Main {
-//     public static void main(String[] args) {
-//         ParkingLotTester tester = new ParkingLotTester();
-//         tester.runAllTests();
-//     }
-// }
-
-
-
-
+public class Main {
+    public static void main(String[] args) {
+        ParkingLotTester tester = new ParkingLotTester();
+        tester.runAllTests();
+    }
+}
