@@ -2,7 +2,6 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -183,8 +182,8 @@ class ParkingSpot {
 class ParkingFloor {
     List<ParkingSpot> parkingSpots  = new ArrayList<>();
 
-    public synchronized void addParkingSpots(ParkingSpot[] parkingSpotsArray) {
-        Collections.addAll(parkingSpots, parkingSpotsArray);
+    public synchronized void addParkingSpots(List<ParkingSpot> parkingSpotsArray) {
+        parkingSpots.addAll(parkingSpotsArray);
     }
     public List<ParkingSpot> getSpots() {
         return parkingSpots;
@@ -197,8 +196,8 @@ class ParkingLot {
         this.parkingFloors = floors;
     }
 
-    public void addParkingFloor(ParkingFloor[] parkingFloorsArray) {
-        Collections.addAll(parkingFloors, parkingFloorsArray);
+    public void addParkingFloor(List<ParkingFloor> parkingFloorsArray) {
+        parkingFloors.addAll(parkingFloorsArray);
     }
 
     public synchronized ParkingSpot findAvailableSpot(VehicleType type) {
@@ -232,7 +231,7 @@ class ParkingLot {
             for(int i=0;i<truckSpots;i++) {
                 spots.add(new ParkingSpot(VehicleType.TRUCK));
             }
-            floor.addParkingSpots(spots.toArray(new ParkingSpot[0]));
+            floor.addParkingSpots(spots);
             floors.add(floor);
             return this;
         }
