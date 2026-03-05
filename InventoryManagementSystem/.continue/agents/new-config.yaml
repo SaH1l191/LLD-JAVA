@@ -1,0 +1,37 @@
+name: Setup Config
+version: 1.0.0
+schema: v1
+
+models:
+  - name: Qwen 2.5 Coder 7B
+    provider: ollama
+    model: qwen2.5-coder:7b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+    defaultCompletionOptions:
+      temperature: 0.2
+      topP: 0.9
+      maxTokens: 2048
+      repeatPenalty: 1.1
+
+  - name: Qwen 2.5 Coder 1.5B Base
+    provider: ollama
+    model: qwen2.5-coder:1.5b-base
+    apiBase: http://localhost:11434
+    roles:
+      - autocomplete
+    defaultCompletionOptions:
+      temperature: 0.1
+      topP: 0.9
+      maxTokens: 256
+      repeatPenalty: 1.05
+
+  - name: Nomic Embed
+    provider: ollama
+    model: nomic-embed-text:latest
+    apiBase: http://localhost:11434
+    roles:
+      - embed

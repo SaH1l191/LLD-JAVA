@@ -128,6 +128,10 @@ class SnakeGame {
     private Map<Pair<Integer, Integer>, Boolean> snakeMap;
     private FoodItem[] foodItemList;
     private int foodIndex;
+    private List<GameObserver> observers;
+
+    
+
 
     public SnakeGame(int width, int height, FoodItem[] foodItemList) {
         foodFactory = new FoodFactory();
@@ -143,6 +147,28 @@ class SnakeGame {
         snakeMap = new HashMap<>();
         snakeMap.put(initPos, true);
         this.foodIndex = 0;
+
+        this.observers = new ArrayList<>();
+    }
+
+    public void addObserver(GameObserver observer) {
+        observers.add(observer);
+    }
+    private void notifyGameOver(int finalScore) {
+        for (GameObserver observer : observers) {
+        observer.onGameOver(finalScore);
+        }
+    }
+    private void notifyFoodEaten(int foodIndex, int newScore) {
+        for (GameObserver observer : observers) {
+        observer.onFoodEaten(foodIndex, newScore);
+        }
+    }
+
+    private void notifyMoveMade(Pair newHead) {
+        for (GameObserver observer : observers) {
+        observer.onMoveMade(newHead);
+        }
     }
 
     public void setMovementStratergy(MovementStratergy movementStratergy) {
@@ -172,6 +198,7 @@ class SnakeGame {
                 && !(newHead.getKey() == currentTail.getKey() && newHead.getValue() == currentTail.getValue());
 
         if (isOutOfBounds || isCollideWithBody) {
+            notifyGameOver(this.score);
             this.score = -1;
             return -1;
         }
@@ -189,6 +216,8 @@ class SnakeGame {
         }
         this.snake.addFirst(newHead);
         this.snakeMap.put(newHead, true);
+
+        notifyMoveMade(newHead);
         return this.score;
     }
 }
@@ -276,6 +305,31 @@ public class SnakeGameTester {
         assertEquals("Snake length after skipping food", 1, g.getSnakeLength());
     }
 }
+
+interface GameObserver {
+    void onMoveMade(Pair newHeadPosition);
+    void onFoodEaten(int foodIndex, int newScore);
+    void onGameOver(int finalScore);
+}
+
+class ConsoleGameObserver implements GameObserver {
+
+    @Override
+    public void onMoveMade(Pair newHeadPosition) {
+        System.out.println("Moved to: " + newHeadPosition);
+    }
+
+    @Override
+    public void onFoodEaten(int foodIndex, int newScore) {
+        System.out.println("Ate food at index " + foodIndex + ", new score: " + newScore);
+    }
+
+    @Override
+    public void onGameOver(int finalScore) {
+        System.out.println("Game Over! Final Score: " + finalScore);
+    }
+}
+
 
 class Pair<K, V> {
 
