@@ -40,14 +40,13 @@ import java.util.Map;
 //     public void updateStatus(String status) {
 //         this.status = status;
 //     }
-// }\
+// }
 
 enum CashType {
     HUNDRED(100),
     TWO_HUNDRED(200),
     FIVE_HUNDRED(500),
     TWO_THOUSAND(2000);
-
     private final int value;
     CashType(int value) {
         this.value = value;
@@ -80,7 +79,6 @@ class Card {
         return this.pin.equals(inputPin);
     }
 }
-
 
 
 class Account {
@@ -194,9 +192,106 @@ class AtmInventory {
     }
 }
  
+abstract class CashHandler {
+    protected CashHandler nextHandler;
+    public void setNextHandler(CashHandler nextHandler) {
+        this.nextHandler = nextHandler;
+    }
+    public void processCash(double amount,Map<CashType,Integer> inventory) {
+    }
+}
+class TwoThousandHandler extends CashHandler {
+    @Override
+    public void processCash(double amount, Map<CashType, Integer> inventory) {
+        int noteValue = CashType.TWO_THOUSAND.getValue();
+        int needed = (int)(amount / noteValue);
+        int available = inventory.getOrDefault(CashType.TWO_THOUSAND, 0);
+        int toUse = Math.min(needed, available);
+        if (toUse > 0) {
+            inventory.put(CashType.TWO_THOUSAND, available - toUse);
+            amount -= toUse * noteValue;
+        }
+        if (amount > 0 && nextHandler != null) {
+            nextHandler.processCash(amount, inventory);
+        }
+    }
+}
+class FiveHundredHandler extends CashHandler {
+    @Override
+    public void processCash(double amount, Map<CashType, Integer> inventory) {
+        int noteValue = CashType.FIVE_HUNDRED.getValue();
+        int needed = (int)(amount / noteValue);
+        int available = inventory.getOrDefault(CashType.FIVE_HUNDRED, 0);
+        int toUse = Math.min(needed, available);
+        if (toUse > 0) {
+            inventory.put(CashType.FIVE_HUNDRED, available - toUse);
+            amount -= toUse * noteValue;
+        }
+        if (amount > 0 && nextHandler != null) {
+            nextHandler.processCash(amount, inventory);
+        }
+    }
+}
+class TwoHundredHandler extends CashHandler {
+    @Override
+    public void processCash(double amount, Map<CashType, Integer> inventory) {
+        int noteValue = CashType.TWO_HUNDRED.getValue();
+        int needed = (int)(amount / noteValue);
+        int available = inventory.getOrDefault(CashType.TWO_HUNDRED, 0);
+        int toUse = Math.min(needed, available);
+        if (toUse > 0) {
+            inventory.put(CashType.TWO_HUNDRED, available - toUse);
+            amount -= toUse * noteValue;
+        }
+        if (amount > 0 && nextHandler != null) {
+            nextHandler.processCash(amount, inventory);
+        }
+    }
+}
+class HunderedHandler extends CashHandler {
+    @Override
+    public void processCash(double amount, Map<CashType, Integer> inventory) {
+        int noteValue = CashType.HUNDRED.getValue();
+        int needed = (int)(amount / noteValue);
+        int available = inventory.getOrDefault(CashType.HUNDRED, 0);
+        int toUse = Math.min(needed, available);
+        if (toUse > 0) {
+            inventory.put(CashType.HUNDRED, available - toUse);
+            amount -= toUse * noteValue;
+        }
+        if (amount > 0) {
+            throw new RuntimeException("Cannot dispense exact amount");
+        }
+    }
+}
 
+interface AtmState {
+    String getStateName();
+    void next(ATMMachine atmMachine);
+}
 
+class IdleState implements AtmState {
+    @Override
+    public String getStateName() {
+        return "Idle State";
+    }
+    @Override
+    public void next(ATMMachine atmMachine) {
+        System.out.println("Card Inserted. Moving to Card Inserted State.");
+        // atmMachine.setCurrentState(new CardInsertedState());
+    }
+}
 
+class ATMMachine {
+    private AtmInventory inventory;
+    private AtmState currentState;
+    public ATMMachine(AtmInventory inventory) {
+        this.inventory = inventory;
+    }
+    public Map<CashType, Integer> withdraw(double amount) {
+        
+    }
+}
 
 public class Main{
     public static void main(String[] args) {
