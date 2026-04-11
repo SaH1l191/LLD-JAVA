@@ -52,9 +52,67 @@ enum CashType {
 
 enum TransactionType {
     WITHDRAW,
-    // DEPOSIT,
+    DEPOSIT,
     BALANCE_INQUIRY,
     // FUND_TRANSFER
+}
+
+interface TransactionStrategy {
+    void execute(ATMMachine atm, int amount);
+}
+class WithdrawTransactionStrategy  implements TransactionStrategy {
+    @Override
+    public void execute(ATMMachine atm, int amount) {
+        atm.performWithdrawal(amount);
+    }
+}
+class DepositTransactionStrategy implements TransactionStrategy {
+    @Override
+    public void execute(ATMMachine atm, int amount) {
+        if(atm.getCurrentAccount() == null) {
+            throw new RuntimeException("No account selected");
+        }
+        if(amount <= 0) {
+            throw new RuntimeException("Invalid amount");
+        }
+        //only 100s allowed for deposit to simplify inventory management
+        if (amount % 100 != 0) {
+            throw new RuntimeException("Only multiples of 100 allowed");
+        }
+
+        atm.getCurrentAccount().deposit(amount);
+
+        int count = amount / CashType.HUNDRED.getValue();
+        atm.getInventory().updateInventory(CashType.HUNDRED, count);
+
+        System.out.println("Deposit successful. Balance: " 
+            + atm.getCurrentAccount().getBalance());
+    }
+}
+class BalanceInquiryStrategy implements TransactionStrategy {
+    @Override
+    public void execute(ATMMachine atm, int amount) {
+        if (atm.getCurrentAccount() == null) {
+            throw new RuntimeException("No account selected");
+        }
+        System.out.println("Current balance: " 
+            + atm.getCurrentAccount().getBalance());
+    }
+}
+
+class TransactionStrategyFactory {
+    public static TransactionStrategy getStrategy(TransactionType type) {
+        switch (type) {
+            case WITHDRAW:
+                return new WithdrawTransactionStrategy();
+            case DEPOSIT:
+                return new DepositTransactionStrategy();
+            case BALANCE_INQUIRY:
+                return new BalanceInquiryStrategy();
+            default:
+                throw new RuntimeException("Invalid transaction type");
+        }
+    }
 }
 
 class Card {
@@ -101,16 +159,13 @@ class Card {
     }
 }
 
-class Account {
-
-    private final String accountNumber;
-    private int balance;
-
+abstract class Account {
+    protected final String accountNumber;
+    protected int balance;
     public Account(String accountNumber, int balance) {
         this.accountNumber = accountNumber;
         this.balance = balance;
     }
-
     public boolean withdraw(int amount) {
         if (balance >= amount) {
             balance -= amount;
@@ -118,22 +173,44 @@ class Account {
         }
         return false;
     }
+    public void deposit(int amount) {balance += amount;}
+    public int getBalance() {return balance;}
+    public String getAccountNumber() {return accountNumber;}
 
-    public void deposit(int amount) {
-        balance += amount;
-    }
+}
 
-    public int getBalance() {
-        return balance;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
+class SavingsAccount extends Account {  
+    private static final int MIN_BALANCE = 100;
+    public SavingsAccount(String accountNumber, int balance) {
+        super(accountNumber, balance); 
+    }  
+    @Override
+    public boolean withdraw(int amount) {
+        if (balance - amount >= MIN_BALANCE) {
+            balance -= amount;
+            return true;
+        }
+        return false;
     }
 }
 
-interface WithdrawStrategy {
+class CurrentAccount extends Account {
+    private static final int OVERDRAFT_LIMIT = 500;
+    public CurrentAccount(String accNo, int balance) {
+        super(accNo, balance);
+    }
+    @Override
+    public boolean withdraw(int amount) {
+        if (balance + OVERDRAFT_LIMIT >= amount) {
+            balance -= amount;
+            return true;
+        }
+        return false;
+    }
+}
 
+
+interface WithdrawStrategy {
     CashType[] getOrder();
 }
 
@@ -239,16 +316,10 @@ class AtmInventory {
 interface AtmState {
 
     void insertCard(ATMMachine atm, Card card);
-
     void enterPin(ATMMachine atm, String pin);
-
     void selectOperation(ATMMachine atm, TransactionType type);
-
     void performTransaction(ATMMachine atm, int amount);
-
-    void ejectCard(ATMMachine atm);
-
-    void performDeposit(ATMMachine atm, Map<CashType, Integer> cash);
+    void ejectCard(ATMMachine atm); 
 }
 
 abstract class BaseState implements AtmState {
@@ -276,12 +347,7 @@ abstract class BaseState implements AtmState {
     @Override
     public void ejectCard(ATMMachine atm) {
         throw new RuntimeException("Invalid operation in current state");
-    }
-
-    @Override
-    public void performDeposit(ATMMachine atm, Map<CashType, Integer> cash) {
-        throw new RuntimeException("Invalid operation in current state");
-    }
+    } 
 }
 
 class IdleState extends BaseState {
@@ -296,9 +362,8 @@ class IdleState extends BaseState {
         atm.setCurrentState(new CardInsertedState());
     }
 }
-
+ 
 class CardInsertedState extends BaseState {
-
     @Override
     public void enterPin(ATMMachine atm, String pin) {
         if (atm.getCurrentCard() == null) {
@@ -307,25 +372,18 @@ class CardInsertedState extends BaseState {
         if (atm.getCurrentCard().isBlocked()) {
             throw new RuntimeException("Blocked card");
         }
-        if (atm.getCurrentCard().pinAttempts >= Card.MAX_ATTEMPTS) {
-            atm.getCurrentCard().blockCard();
-            System.err.println("Too many incorrect attempts. Card is blocked.");
-            atm.setCurrentState(new EjectCardState());
-            return;
-        }
         if (atm.getCurrentCard().validatePin(pin)) {
             atm.getCurrentCard().resetPinAttempts();
-            System.out.println("Pin entered. Moving to Pin Entered State.");
+            System.out.println("Pin entered. Moving to Select Operation State.");
             String accountNumber = atm.getCurrentCard().getAccountNumber();
             Account acc = atm.getAccountByNumber(accountNumber);
-            if (acc == null) {
-                throw new RuntimeException("Account not found");
-            }
+            if (acc == null) throw new RuntimeException("Account not found");
             atm.setCurrentAccount(acc);
             atm.setCurrentState(new SelectOperationState());
+
         } else {
-            System.out.println("Invalid pin.");
             atm.getCurrentCard().incrementPinAttempts();
+            System.out.println("Invalid PIN");
             if (atm.getCurrentCard().pinAttempts >= Card.MAX_ATTEMPTS) {
                 atm.getCurrentCard().blockCard();
                 System.out.println("Too many incorrect attempts. Card blocked.");
@@ -349,21 +407,11 @@ class TransactionState extends BaseState {
 
     @Override
     public void performTransaction(ATMMachine atm, int amount) {
-        TransactionType type = atm.getSelectedTransaction();
-
-        switch (type) {
-            case WITHDRAW:
-                atm.performWithdrawal(amount);
-                break;
-            case BALANCE_INQUIRY:
-                if (atm.getCurrentAccount() == null) {
-                    throw new RuntimeException("No account selected");
-                }
-                System.out.println("Current balance: " + atm.getCurrentAccount().getBalance());
-                break;
-            default:
-                throw new RuntimeException("Unsupported transaction");
+        TransactionStrategy strategy = atm.getCurrentTransactionStrategy();
+        if(strategy == null) {
+            throw new RuntimeException("No transaction selected");
         }
+        strategy.execute(atm, amount);
         System.out.println("Transaction completed.");
         atm.setCurrentState(new EjectCardState());
     }
@@ -378,7 +426,7 @@ class EjectCardState extends BaseState {
         atm.setCurrentCard(null);
         atm.setCurrentAccount(null);
         atm.setCurrentState(new IdleState());
-        atm.setSelectedTransaction(null);
+        atm.setCurrentTransactionStrategy(null);
     }
 }
 
@@ -387,7 +435,7 @@ class ATMMachine {
     private AtmInventory inventory;
     private AtmState currentState;
     private Card currentCard;
-    private TransactionType selectedTransaction;
+    private TransactionStrategy currentTransactionStrategy;
     private WithdrawStrategy withdrawStrategy;
     private Map<String, Account> accounts;
     private Account currentAccount;
@@ -420,7 +468,7 @@ class ATMMachine {
     }
 
     public void setSelectedTransaction(TransactionType type) {
-        this.selectedTransaction = type;
+        this.currentTransactionStrategy = TransactionStrategyFactory.getStrategy(type);
     }
 
     public void selectOperation(TransactionType type) {
@@ -462,6 +510,10 @@ class ATMMachine {
         currentState.performTransaction(this, amount);
     }
 
+    public void setCurrentTransactionStrategy(TransactionStrategy strategy) {
+        this.currentTransactionStrategy = strategy;
+    }
+
     public void printTransaction(Map<CashType, Integer> dispensedCash) {
         System.out.println("Dispensed Cash:");
         for (Map.Entry<CashType, Integer> entry : dispensedCash.entrySet()) {
@@ -493,14 +545,59 @@ class ATMMachine {
         return inventory;
     }
 
-    public TransactionType getSelectedTransaction() {
-        return selectedTransaction;
+    public TransactionStrategy getCurrentTransactionStrategy() {
+        return currentTransactionStrategy;
     }
 }
 
 public class Main {
 
     public static void main(String[] args) {
+
+        Map<CashType, Integer> cashMap = new HashMap<>();
+        cashMap.put(CashType.HUNDRED, 10);
+        cashMap.put(CashType.TWO_HUNDRED, 10);
+        cashMap.put(CashType.FIVE_HUNDRED, 10);
+        cashMap.put(CashType.TWO_THOUSAND, 5);
+        AtmInventory inventory = new AtmInventory(cashMap);
+
+        Map<String, Account> accounts = new HashMap<>();
+        Account savings = new SavingsAccount("SAV123", 5000);
+        Account current = new CurrentAccount("CUR123", 2000);
+
+        accounts.put("SAV123", savings);
+        accounts.put("CUR123", current);
+
+        Card savingsCard = new Card("1111", "VISA", "1234", "SAV123");
+        Card currentCard = new Card("2222", "MASTER", "5678", "CUR123");
+
+        ATMMachine atm = new ATMMachine(inventory, accounts);
+        
+
+        //Test flows :- 
+
+        System.out.println("\n=== FLOW 1: SAVINGS -> BALANCE INQUIRY ===");
+        atm.insertCard(savingsCard);
+        atm.enterPin("1234");
+        atm.selectOperation(TransactionType.BALANCE_INQUIRY);
+        atm.performTransaction(0); 
+        atm.ejectCard();
+
+        System.out.println("\n=== FLOW 2: SAVINGS -> Wrong Pin -> BALANCE INQUIRY ===");
+        atm.insertCard(savingsCard);
+        atm.enterPin("1234");
+        atm.selectOperation(TransactionType.BALANCE_INQUIRY);
+        atm.performTransaction(0); 
+        atm.ejectCard();
+
+        System.out.println("\n=== FLOW 3: SAVINGS → DEPOSIT ===");
+        atm.insertCard(savingsCard);
+        atm.enterPin("1234");
+        atm.selectOperation(TransactionType.DEPOSIT);
+        atm.performTransaction(1000); // multiples of 100
+        atm.ejectCard();
+        System.out.println("\n Inventory after deposit:");
+        inventory.printInventory();
 
     }
 }
